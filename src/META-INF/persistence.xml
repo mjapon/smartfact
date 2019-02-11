@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="FARMAJJPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>smf.entity.Clientes</class>
+    <class>smf.entity.Facturas</class>
+    <class>smf.entity.Tickets</class>
+    <class>smf.entity.Pagosfactcaja</class>
+    <class>smf.entity.Caja</class>
+    <class>smf.entity.Ctes</class>
+    <class>smf.entity.Pagosfact</class>
+    <class>smf.entity.Unidades</class>
+    <class>smf.entity.Movtransacc</class>
+    <class>smf.entity.Catcajas</class>
+    <class>smf.entity.Reportes</class>
+    <class>smf.entity.Detallesfact</class>
+    <class>smf.entity.Estadospago</class>
+    <class>smf.entity.Transacciones</class>
+    <class>smf.entity.Kardexart</class>
+    <class>smf.entity.Cajadet</class>
+    <class>smf.entity.Formaspago</class>
+    <class>smf.entity.Categorias</class>
+    <class>smf.entity.Articulos</class>
+    <class>smf.entity.Cuentacontable</class>
+    <class>smf.entity.Unidadesprecio</class>
+    <class>smf.entity.Empresa</class>
+    <class>smf.entity.Secuencias</class>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/farmaciajj"/>
+      <property name="javax.persistence.jdbc.user" value="postgres"/>
+      <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+      <!--Clave casa(prod) -->
+      <!--
+      <property name="javax.persistence.jdbc.password" value="root"/>
+      -->
+      <!--Clave maquina trabajo -->
+      <property name="javax.persistence.jdbc.password" value="postgres"/>
+    </properties>
+  </persistence-unit>
+</persistence>

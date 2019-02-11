@@ -1,0 +1,5 @@
+En esta página puedo encontrar informaion relacionada 
+para poder ejecutar respaldos de la base de datos:
+
+https://stackoverflow.com/questions/36993441/how-to-backup-a-postgres-database-using-java
+
