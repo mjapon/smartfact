@@ -404,39 +404,43 @@ public class ReportesFrame extends BaseFrame {
             params.put("pdesde", desde);
             params.put("phasta", hasta);
             params.put("pdescparams", pdescparams);
+            
+            
+            if (reporteSel != null){                
+                String abrRep = reporteSel.getRepAbr();
+                if ("CUENTASXCOBRAR".equalsIgnoreCase(abrRep)
+                        || "CUENTASXPAGAR".equalsIgnoreCase(abrRep)) {
+                    String pwhere = "";
+                    if (selectedCli != null) {
+                        pdescparams = "CLIENTE:" + selectedCli.getDescItem();
+                        //pwhere, pcliid
+                        params.put("pcliid", selectedCli.getIdItem());
+                        params.put("pdescparams", pdescparams);
+                        pwhere = " and f.cli_id = $P{pcliid} ";
+                    } else {
+                        params.put("pdescparams", "");
+                        pwhere = " ";
+                    }
+                    params.put("pwhere", pwhere);
+                } else if ("VENTASLIST".equalsIgnoreCase(abrRep)
+                        || "COMPRASLIST".equalsIgnoreCase(abrRep)) {
 
-            String abrRep = reporteSel.getRepAbr();
-            if ("CUENTASXCOBRAR".equalsIgnoreCase(abrRep)
-                    || "CUENTASXPAGAR".equalsIgnoreCase(abrRep)) {
-                String pwhere = "";
-                if (selectedCli != null) {
-                    pdescparams = "CLIENTE:" + selectedCli.getDescItem();
-                    //pwhere, pcliid
-                    params.put("pcliid", selectedCli.getIdItem());
-                    params.put("pdescparams", pdescparams);
-                    pwhere = " and f.cli_id = $P{pcliid} ";
-                } else {
-                    params.put("pdescparams", "");
-                    pwhere = " ";
-                }
-                params.put("pwhere", pwhere);
-            } else if ("VENTASLIST".equalsIgnoreCase(abrRep)
-                    || "COMPRASLIST".equalsIgnoreCase(abrRep)) {
-
-                String pwhere = "";
-                if (selectedCli != null) {
-                    pdescparams = "CLIENTE:" + selectedCli.getDescItem();
-                    //pwhere, pcliid
-                    params.put("pcliid", selectedCli.getIdItem());
-                    params.put("pdescparams", pdescparams);
-                    pwhere = " and f.cli_id = $P{pcliid} ";
-                } else {
-                    pdescparams = String.format("DESDE: %s HASTA: %s", desdeTF.getText(), hastaTF.getText());
-                    params.put("pdescparams", pdescparams);
-                    pwhere = " and f.fact_fecha BETWEEN  $P{pdesde}  AND  $P{phasta} ";
-                }
-                params.put("pwhere", pwhere);
-            }
+                    String pwhere = "";
+                    if (selectedCli != null) {
+                        pdescparams = "CLIENTE:" + selectedCli.getDescItem();
+                        //pwhere, pcliid
+                        params.put("pcliid", selectedCli.getIdItem());
+                        params.put("pdescparams", pdescparams);
+                        pwhere = " and f.cli_id = $P{pcliid} ";
+                    } else {
+                        pdescparams = String.format("DESDE: %s HASTA: %s", desdeTF.getText(), hastaTF.getText());
+                        params.put("pdescparams", pdescparams);
+                        pwhere = " and f.fact_fecha BETWEEN  $P{pdesde}  AND  $P{phasta} ";
+                    }
+                    params.put("pwhere", pwhere);
+                }                
+            }           
+            
 
             JasperUtil.showReporte(params, reporteSel.getRepPath());
         } catch (Throwable ex) {

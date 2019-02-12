@@ -180,7 +180,7 @@ public class SelectItemFrame extends BaseFrame {
 
         jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        jLabelTitulo.setText("Busqueda");
+        jLabelTitulo.setText("Búsqueda");
         jPanel4.add(jLabelTitulo);
 
         jPanel2.add(jPanel4, java.awt.BorderLayout.NORTH);

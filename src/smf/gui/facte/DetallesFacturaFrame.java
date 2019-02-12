@@ -123,6 +123,7 @@ public class DetallesFacturaFrame extends BaseFrame {
                             saldoValLbl.setForeground(Color.red);
                         }
                         else{
+                            texto = NumbersUtil.round(saldo, 2).toPlainString()+"[CANCELADO]";
                             saldoValLbl.setForeground(Color.green);
                         }
                     }                  

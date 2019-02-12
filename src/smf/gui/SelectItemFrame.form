@@ -85,7 +85,7 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="jLabelTitulo">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Busqueda"/>
+                <Property name="text" type="java.lang.String" value="B&#xfa;squeda"/>
               </Properties>
             </Component>
           </SubComponents>
