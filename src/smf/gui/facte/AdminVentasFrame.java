@@ -250,8 +250,8 @@ public class AdminVentasFrame extends BaseFrame implements ISearchArt{
         jLabelSumaUtilidades = new javax.swing.JLabel();
         jTFSumaUtilidades = new javax.swing.JTextField();
         jPanel11 = new javax.swing.JPanel();
-        btnAnular = new javax.swing.JButton();
         btnDetalles = new javax.swing.JButton();
+        btnAnular = new javax.swing.JButton();
         btnUtilidades = new javax.swing.JButton();
         btnClose = new javax.swing.JButton();
 
@@ -504,17 +504,6 @@ public class AdminVentasFrame extends BaseFrame implements ISearchArt{
 
         jPanel11.setLayout(new java.awt.GridLayout(7, 1));
 
-        btnAnular.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        btnAnular.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smf/gui/icons/icons8-cancel_subscription.png"))); // NOI18N
-        btnAnular.setText("Anular");
-        btnAnular.setEnabled(false);
-        btnAnular.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAnularActionPerformed(evt);
-            }
-        });
-        jPanel11.add(btnAnular);
-
         btnDetalles.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         btnDetalles.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smf/gui/icons/icons8-view_details.png"))); // NOI18N
         btnDetalles.setText("Detalles");
@@ -525,6 +514,17 @@ public class AdminVentasFrame extends BaseFrame implements ISearchArt{
             }
         });
         jPanel11.add(btnDetalles);
+
+        btnAnular.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        btnAnular.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smf/gui/icons/icons8-cancel_subscription.png"))); // NOI18N
+        btnAnular.setText("Anular");
+        btnAnular.setEnabled(false);
+        btnAnular.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAnularActionPerformed(evt);
+            }
+        });
+        jPanel11.add(btnAnular);
 
         btnUtilidades.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         btnUtilidades.setText("Utilidades");

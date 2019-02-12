@@ -41,7 +41,7 @@ public class SplashScreen extends BaseFrame {
                 img = ImageIO.read(new File(path));
             }
             else{
-                img =ImageIO.read(SmartFactMain.class.getResource("deftimg.jpg"));
+                img =ImageIO.read(SmartFactMain.class.getResource("/smf/gui/icons/deftimg.jpg"));
             }
             
             Image dimg = img.getScaledInstance(jLabelImg.getWidth(), jLabelImg.getHeight(), Image.SCALE_SMOOTH);

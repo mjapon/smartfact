@@ -24,7 +24,7 @@
 /*     */ import javax.swing.JPanel;
 /*     */ import javax.swing.JScrollPane;
 /*     */ import javax.swing.JTextArea;
-/*     */ import mupi.af.print.UtilidadCodBarrasImpresion;
+/*     */ //import mupi.af.print.UtilidadCodBarrasImpresion;
 /*     */ 
 /*     */ 
 /*     */ public class PrintFrame
@@ -137,8 +137,8 @@
 /*     */       }
 /*     */       
 /* 142 */       String texto = this.txtPrintTextArea.getText();
-/* 143 */       UtilidadCodBarrasImpresion utilidadCodBarrasImpresion = new UtilidadCodBarrasImpresion(impresora, anchoPagina, altoPagina);
-/* 144 */       utilidadCodBarrasImpresion.imprimir(texto);
+/* 143 */       //UtilidadCodBarrasImpresion utilidadCodBarrasImpresion = new UtilidadCodBarrasImpresion(impresora, anchoPagina, altoPagina);
+/* 144 */       //utilidadCodBarrasImpresion.imprimir(texto);
 ///* 145 */       this.webSockInstance.getSystemTrayUtil().showBaloom("Imprimiendo..");
 /* 146 */       this.modoImpresion = "";
 /* 147 */       setVisible(false);

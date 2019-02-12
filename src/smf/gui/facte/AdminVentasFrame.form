@@ -545,21 +545,6 @@
         <Property name="rows" type="int" value="7"/>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JButton" name="btnAnular">
-          <Properties>
-            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Arial" size="18" style="0"/>
-            </Property>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/smf/gui/icons/icons8-cancel_subscription.png"/>
-            </Property>
-            <Property name="text" type="java.lang.String" value="Anular"/>
-            <Property name="enabled" type="boolean" value="false"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAnularActionPerformed"/>
-          </Events>
-        </Component>
         <Component class="javax.swing.JButton" name="btnDetalles">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -573,6 +558,21 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDetallesActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnAnular">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Arial" size="18" style="0"/>
+            </Property>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/smf/gui/icons/icons8-cancel_subscription.png"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Anular"/>
+            <Property name="enabled" type="boolean" value="false"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAnularActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnUtilidades">

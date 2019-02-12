@@ -6,9 +6,9 @@
 package smf.util;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,7 +25,6 @@ import javax.print.attribute.standard.OrientationRequested;
 import javax.print.attribute.standard.PrinterName;
 import javax.swing.JOptionPane;
 import net.sf.jasperreports.engine.JRException;
-
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -41,10 +40,9 @@ import net.sf.jasperreports.view.JasperViewer;
 public class JasperUtil {
 
     public static final String CLAVE_DB = "root"; //PROD->"root"
+    public static final String URI_DB = "jdbc:postgresql://localhost:5432/farmaciajj";
 
     public static void main(String args[]) throws ParseException {
-        
-        
         //System.out.println("Generando reporte--->");
         /*
         String pathReporte = "C:\\dev\\SMARTFACT\\VERSIONVETERG\\VETERPRJ\\src\\reportes\\templateFactura.jrxml";
@@ -52,125 +50,79 @@ public class JasperUtil {
         System.out.println("fin");
          */
         // String pathReporte = "/Users/mjapon/dev/SMARTFACT/VVETERINARIA/reportes/ticket.jasper";
-        
+        String pathReporte = "/Users/mjapon/JaspersoftWorkspace/MyReports/ticket.jasper";
+        showTicket(6, pathReporte);
         /*
-        String pathReporte = "/Users/mjapon/dev/SMARTFACT/VVETERINARIA/reportes/ventasPorMes.jasper";
-
-        //showTicket(2, pathReporte);
         Date desde = FechasUtil.parse("01/01/2018");
         Date hasta = FechasUtil.parse("01/01/2019");
-
         showReporte(desde, hasta, pathReporte);
-
-        System.out.println("fin");
         */
-        
-        
-        
-          // Creating 2 BigDecimal objects 
-        BigDecimal b1, b2; 
-  
-        b1 = new BigDecimal(67891); 
-        b2 = new BigDecimal("67891.000"); 
-  
-        if (b1.compareTo(b2) == 0) { 
-            System.out.println(b1 + " and " + b2 + " are equal."); 
-        } 
-        else if (b1.compareTo(b2) == 1) { 
-            System.out.println(b1 + " is greater than " + b2 + "."); 
-        } 
-        else { 
-            System.out.println(b1 + " is lesser than " + b2 + "."); 
-        } 
-        
-        
+        System.out.println("fin");
 
     }
-
+    
+    public static Connection getConnection() throws SQLException, ClassNotFoundException{        
+        Class.forName("org.postgresql.Driver");
+        return  DriverManager.getConnection(URI_DB,"postgres", CLAVE_DB);
+    }
+    
+    public static void logError(Throwable ex){
+        System.out.println("Error al generar el reporte" + ex.getMessage());
+        ex.printStackTrace();
+    }
+    
     public static void showTicket(Integer ticketId, String pathReporte) {
         try {
-            //JasperReport report = JasperCompileManager.compileReport(pathReporte);
             JasperReport report = (JasperReport) JRLoader.loadObject(new File(pathReporte));
-
             Map<String, Object> params = new HashMap<String, Object>();
-
             params.put("ticketid", ticketId);
-
-            Class.forName("org.postgresql.Driver");
-            Connection conn = DriverManager.
-                    getConnection("jdbc:postgresql://localhost:5432/farmaciajj",
-                             "postgres", CLAVE_DB);
-
-            JasperPrint print = JasperFillManager.fillReport(report, params, conn);
+            JasperPrint print = JasperFillManager.fillReport(report, params, getConnection());
             JasperViewer jasperViewer = new JasperViewer(print, false);
             jasperViewer.setVisible(true);
         } catch (Throwable ex) {
             JOptionPane.showMessageDialog(null, "Algo salio mal:" + ex.getMessage());
-            System.out.println("Error al generar el reporte" + ex.getMessage());
-            ex.printStackTrace();
+            logError(ex);
         }
     }
 
     public static void showFactura(Integer factId, String pathReporte) {
         try {
-            //JasperReport report = JasperCompileManager.compileReport(pathReporte);        
-
             JasperReport report = (JasperReport) JRLoader.loadObject(new File(pathReporte));
-
             Map<String, Object> params = new HashMap<String, Object>();
-
             params.put("pfactid", factId);
-
-            Class.forName("org.postgresql.Driver");
-            Connection conn = DriverManager.
-                    getConnection("jdbc:postgresql://localhost:5432/farmaciajj",
-                             "postgres", CLAVE_DB);
-
-            JasperPrint print = JasperFillManager.fillReport(report, params, conn);
+            JasperPrint print = JasperFillManager.fillReport(report, params, getConnection());
             JasperViewer jasperViewer = new JasperViewer(print, false);
             jasperViewer.setVisible(true);
         } catch (Throwable ex) {
             JOptionPane.showMessageDialog(null, "Algo salio mal:" + ex.getMessage());
-            System.out.println("Error al generar el reporte" + ex.getMessage());
-            ex.printStackTrace();
+            logError(ex);
         }
     }
 
     public static void showReporte(Date desde, Date hasta, String pathReporte) {
         try {
-            //JasperReport report = JasperCompileManager.compileReport(pathReporte);                    
             JasperReport report = (JasperReport) JRLoader.loadObject(new File(pathReporte));
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("pdesde", desde);
             params.put("phasta", hasta);
-
-            Class.forName("org.postgresql.Driver");
-            Connection conn = DriverManager.
-                    getConnection("jdbc:postgresql://localhost:5432/farmaciajj",
-                             "postgres", CLAVE_DB);
-
-            JasperPrint print = JasperFillManager.fillReport(report, params, conn);
+            JasperPrint print = JasperFillManager.fillReport(report, params, getConnection());
             JasperViewer jasperViewer = new JasperViewer(print, false);
             jasperViewer.setVisible(true);
         } catch (Throwable ex) {
             JOptionPane.showMessageDialog(null, "Algo salio mal:" + ex.getMessage());
-            System.out.println("Error al generar el reporte" + ex.getMessage());
-            ex.printStackTrace();
+            logError(ex);
         }
     }
 
     public static void showReporte(Map<String, Object> params, String pathReporte) {
         try {
             JasperReport report = (JasperReport) JRLoader.loadObject(new File(pathReporte));
-            Class.forName("org.postgresql.Driver");
-            Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/farmaciajj", "postgres", CLAVE_DB);
-            JasperPrint print = JasperFillManager.fillReport(report, params, conn);
+            JasperPrint print = JasperFillManager.fillReport(report, params, getConnection());
             JasperViewer jasperViewer = new JasperViewer(print, false);
             jasperViewer.setVisible(true);
         } catch (Throwable ex) {
             JOptionPane.showMessageDialog(null, "Algo salio mal:" + ex.getMessage());
-            System.out.println("Error al generar el reporte" + ex.getMessage());
-            ex.printStackTrace();
+            logError(ex);
         }
     }
 

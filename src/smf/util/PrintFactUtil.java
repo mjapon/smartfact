@@ -30,11 +30,10 @@ public class PrintFactUtil {
     }
     
     public static void imprimirTicketJasper(CtesJpaController ctesController, Integer ticketId) throws IOException{
-        //Verificar el numero de copias ha imprimir
-        System.out.println("texto ha imprimir");
-        
-        //IMPRESORA
+        //IMPRESORA                                               
         String rutaReporteFact = ctesController.findValueByClave("RUTA_REPORTE_TICKET");
+        System.out.println("Path reporte es:");
+        System.out.println(rutaReporteFact);
         JasperUtil.showTicket(ticketId, rutaReporteFact);
     }
     
