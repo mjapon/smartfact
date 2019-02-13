@@ -7,6 +7,7 @@ package smf.controller;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -20,6 +21,9 @@ import smf.entity.Facturas;
 import smf.entity.Movtransacc;
 import smf.entity.Pagosfact;
 import smf.entity.Transacciones;
+import smf.util.FechasUtil;
+import smf.util.NumbersUtil;
+import smf.util.datamodels.rows.FilaAbonos;
 import smf.util.form.AbonoForm;
 
 /**
@@ -204,11 +208,32 @@ public class MovtransaccJpaController  extends BaseJpaController<Facturas> imple
     }
     
     public List<Movtransacc> listarAbonos(Integer codPago){
-        //em.getTransaction().begin();
+        Query query = newQuery("from Movtransacc o where o.pgfId = "+codPago+" order by o.movFechareg desc");
+        return query.getResultList();        
+    }
+    
+    public List<FilaAbonos> listarAbonosRaw(Integer codPago){
+        List<FilaAbonos> resultList = new ArrayList<>();
+        String sql = String.format("select m.mov_id, m.mov_fechareg," +
+        "  m.mov_monto, case when mov_valido = 0 then 'VALIDO' else 'ANULADO' end as estado,\n" +
+        "  m.mov_observ," +
+        "  c.cc_nombre " +
+        " from movtransacc m " +
+        " left join catcajas c on c.cc_id = m.cj_id " +
+        " where pgf_id = %d order by m.mov_fechareg desc", codPago);
         
-        Query query = newQuery("from Movtransacc o where o.pgfId = "+codPago);
-        return query.getResultList();
+        List<Object[]> tmpres = newNativeQuery(sql).getResultList();
+        for(Object[] row: tmpres){
+            Integer movId = (Integer)row[0];
+            Date fechareg = row[1]!=null?(Date)row[1]:null;
+            BigDecimal monto = NumbersUtil.round2(row[2]!=null?(BigDecimal)row[2]:null);
+            String estado = row[3]!=null?(String)row[3]:null;
+            String obs = row[4]!=null?(String)row[4]:null;
+            String caja = row[5]!=null?(String)row[5]:null;
+            resultList.add(new FilaAbonos(movId, FechasUtil.formatDateHour(fechareg), monto, estado, obs, caja));
+        }
         
+        return resultList;
     }
     
     public void anularAbono( Integer movId, String obs) throws Throwable{

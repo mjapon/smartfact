@@ -29,18 +29,21 @@ public class AbonosDataModel  extends AbstractTableModel{
     protected TotalesCuentasXPC totales;
     protected JTable jtable;
     
-    private Map<Integer, Integer> mapSort;     
+    private Map<Integer, Integer> mapSort;
     private MovtransaccJpaController controller;    
     private Integer pgfId;
-    //private ParamBusquedaCXCP params;
-    
-    //pgfFecreg
+    private Integer traTipo;
+    /*
+    4	CUENTAS X PAGAR
+    3	CUENTAS X COBRAR
+    */
     
     public enum ColumnaAbonosEnum{        
         FECHAABONO(0, "Fecha Abono", String.class, "movFechareg"),
         MONTO(1, "Monto", BigDecimal.class, "movMonto"),
         OBS(2, "Observacion", String.class, "pgfMonto"),
-        ESTADO(3, "Estado", String.class, "pgfSaldo");
+        ESTADO(3, "Estado", String.class, "pgfSaldo"),
+        CAJA(4, "Caja", String.class, "caja");
         
         public final int index;
         public String desc;
@@ -91,8 +94,7 @@ public class AbonosDataModel  extends AbstractTableModel{
         mapSort.put(1, 0);
         mapSort.put(2, 0);
         mapSort.put(3, 0);
-        
-        //this.pgfId = pagoId;
+        mapSort.put(4, 0);
     }
     
     public void removeItem(int rowIndex){
@@ -126,10 +128,8 @@ public class AbonosDataModel  extends AbstractTableModel{
     }
 
      @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex) {   
-        
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
        return false;
-        
     }
     
     @Override
@@ -147,12 +147,6 @@ public class AbonosDataModel  extends AbstractTableModel{
     public Object getValueAt(int rowIndex, int columnIndex) {        
         if (rowIndex>=0 && rowIndex<items.size()){
             FilaAbonos fila = items.get(rowIndex);
-            /*
-            if (columnIndex==ColumnaFacturaEnum.NRO.index){
-                return filafactura.getNumFila();
-            }
-            else 
-            */
             if (columnIndex==ColumnaAbonosEnum.FECHAABONO.index){
                 return fila.getFechaAbono();
             }
@@ -165,6 +159,9 @@ public class AbonosDataModel  extends AbstractTableModel{
             else if (columnIndex==ColumnaAbonosEnum.ESTADO.index){
                 return fila.getEstado();
             }
+            else if (columnIndex==ColumnaAbonosEnum.CAJA.index){
+                return fila.getCaja();
+            }
             else{
                 return "";
             }
@@ -173,26 +170,6 @@ public class AbonosDataModel  extends AbstractTableModel{
             return "";
         }
     }
-    
-    /*
-    public void loadItems(List<Object[]> items){        
-        for (Object[] item: items){            
-            Integer facturaId = (Integer)item[0];
-            String numFactura = (String)item[1];
-            Date fechafactura = (Date)item[2];
-            BigDecimal monto = (BigDecimal)item[3];
-            BigDecimal deuda = (BigDecimal)item[8];
-            String referente = (String)item[4];
-            String obs = (String)item[9];   
-            Integer codPago = (Integer)item[0]; 
-            FilaCXCP fila = new FilaCXCP(facturaId, numFactura, monto, deuda, referente, obs, FechasUtil.format(fechafactura), codPago);
-            addItem(fila);
-        }
-        
-        fireTableDataChanged();
-        
-    }
-*/
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
@@ -204,10 +181,9 @@ public class AbonosDataModel  extends AbstractTableModel{
         
     }    
     
-    public void switchSortColumn(Integer column) throws Exception{    
+    public void switchSortColumn(Integer column) throws Exception{
         
-        for (int i = 0; i<AbonosDataModel.ColumnaAbonosEnum.values().length;i++){
-            
+        for (int i = 0; i<AbonosDataModel.ColumnaAbonosEnum.values().length;i++){            
             if (i == column){
                 Integer sortValue = mapSort.get(column);
                 if (sortValue == -1){
@@ -222,8 +198,7 @@ public class AbonosDataModel  extends AbstractTableModel{
             }
         }
         
-        this.loadFromDataBase();
-        
+        this.loadFromDataBase();        
     }
     
     public Integer getSorIndex(){
@@ -244,30 +219,39 @@ public class AbonosDataModel  extends AbstractTableModel{
     }
     
     public void loadFromDataBase() throws Exception{
+        /*
         int sortIndex = getSorIndex();
         int sortorder = mapSort.get(sortIndex);
         
-        String sortord = sortorder==-1?"desc":"asc";
+        String sortord = sortorder==-1?"desc":"asc";        
+        */
         
-        
-        List<Movtransacc> abonosList = controller.listarAbonos(pgfId);        
         items.clear();
         
-        for(Movtransacc item: abonosList){
-            
-            String fechaAbono = FechasUtil.formatDateHour(item.getMovFechareg());
-            BigDecimal monto = NumbersUtil.round(item.getMovMonto(), 2);
-            String estado = item.getMovValido()==0?"VALIDO":"ANULADO";
-            String observacion = item.getMovObserv();
-            
-            FilaAbonos fila = new FilaAbonos(item.getMovId(),fechaAbono, monto, estado, observacion);
-            items.add(fila);
+         List<FilaAbonos> resultList = controller.listarAbonosRaw(pgfId);
+            resultList.stream().forEach(e->items.add(e));
+        
+        /*
+        if (traTipo != null && traTipo == 3){//CUENTAS X COBRAR
+            List<FilaAbonos> resultList = controller.listarAbonosRaw(pgfId);
+            resultList.stream().forEach(e->items.add(e));
         }
+        else{
+            List<Movtransacc> abonosList = controller.listarAbonos(pgfId);
+            for(Movtransacc item: abonosList){
+                String fechaAbono = FechasUtil.formatDateHour(item.getMovFechareg());
+                BigDecimal monto = NumbersUtil.round(item.getMovMonto(), 2);
+                String estado = item.getMovValido()==0?"VALIDO":"ANULADO";
+                String observacion = item.getMovObserv();
+                FilaAbonos fila = new FilaAbonos(item.getMovId(),fechaAbono, monto, estado, observacion);
+                items.add(fila);
+            }
+        }
+    */
         
         totalizar();                
         fireTableDataChanged();
     }
-    
     
     public void totalizar(){
         
@@ -312,6 +296,12 @@ public class AbonosDataModel  extends AbstractTableModel{
     public void setPgfId(Integer pgfId) {
         this.pgfId = pgfId;
     }
-    
-    
+
+    public Integer getTraTipo() {
+        return traTipo;
+    }
+
+    public void setTraTipo(Integer traTipo) {
+        this.traTipo = traTipo;
+    }
 }

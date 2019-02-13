@@ -72,6 +72,7 @@ public class CuentasXCBPFrame extends BaseFrame {
         
         abonosDataModel = new AbonosDataModel();
         abonosDataModel.setController(movsController);
+        abonosDataModel.setTraTipo(tra_codigo);
         jTable2.setModel(abonosDataModel);
         
         cPDataModel = new CuentaXCPDataModel();
