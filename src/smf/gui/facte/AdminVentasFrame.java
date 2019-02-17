@@ -38,7 +38,7 @@ import org.jdatepicker.JDatePicker;
  *
  * @author mjapon
  */
-public class AdminVentasFrame extends BaseFrame implements ISearchArt{
+public class AdminVentasFrame extends BaseFrame implements ISearchArt, IAdminVentas{
 
      private FacturasJpaController facturasJpaController;
      private VentasDataModel ventasDataModel;
@@ -153,6 +153,7 @@ public class AdminVentasFrame extends BaseFrame implements ISearchArt{
         boolean isEnabled =this.jTable2.getSelectedRows().length>0;
         btnAnular.setEnabled(isEnabled);
         btnDetalles.setEnabled(isEnabled);
+        btnEdit.setEnabled(isEnabled);
     }
     
     protected MaskFormatter createFormatter(String s) {
@@ -253,6 +254,7 @@ public class AdminVentasFrame extends BaseFrame implements ISearchArt{
         btnDetalles = new javax.swing.JButton();
         btnAnular = new javax.swing.JButton();
         btnUtilidades = new javax.swing.JButton();
+        btnEdit = new javax.swing.JButton();
         btnClose = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -536,6 +538,17 @@ public class AdminVentasFrame extends BaseFrame implements ISearchArt{
         });
         jPanel11.add(btnUtilidades);
 
+        btnEdit.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        btnEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smf/gui/icons/edit_25px.png"))); // NOI18N
+        btnEdit.setText("Editar");
+        btnEdit.setEnabled(false);
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
+        jPanel11.add(btnEdit);
+
         btnClose.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         btnClose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smf/gui/icons/icons8-close_pane_filled.png"))); // NOI18N
         btnClose.setText("Cerrar");
@@ -670,6 +683,27 @@ public class AdminVentasFrame extends BaseFrame implements ISearchArt{
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldFiltroKeyPressed
 
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        
+        int row = this.jTable2.getSelectedRow();
+        if (row>-1){
+            FilaVenta filart = this.ventasDataModel.getValueAt(row);
+            Integer estado = facturasJpaController.getEstadoCaja(filart.getVentaId());
+            if (estado!=null && estado == 1){
+                showMsg("No es posible editar este comprobante, la caja ya ha sido cerrada");
+            }
+            else{
+                FacturaVentaFrame facturaVentaFrame = new FacturaVentaFrame(this.tra_codigo, filart.getVentaId());
+                facturaVentaFrame.setAdminVentasFrame(this);
+                facturaVentaFrame.restoreDefaultsDividerLocation();
+                facturaVentaFrame.centerOnScreen();
+                facturaVentaFrame.setVisible(true);
+            }
+        }
+        
+        
+    }//GEN-LAST:event_btnEditActionPerformed
+
     
     public void showDetallesFrame(){
         //System.out.println("Select action");
@@ -709,6 +743,7 @@ public class AdminVentasFrame extends BaseFrame implements ISearchArt{
     private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnClose;
     private javax.swing.JButton btnDetalles;
+    private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnUtilidades;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;

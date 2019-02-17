@@ -20,7 +20,12 @@ import java.util.regex.Pattern;
 public class GenTxtFactura {
     
     
-    public static String replace(Map<String,String> datos, String template){        
+    public static String replace(Map<String,String> datos, String template){  
+        
+       
+        
+        
+        
         Pattern pattern = Pattern.compile("\\{(.*?)\\}");        
         Matcher m = pattern.matcher(template);
         
@@ -54,7 +59,8 @@ public class GenTxtFactura {
             
             resultString = resultString.replaceAll(substr, value);
         }
-        return resultString;        
+        return resultString;      
+        
     }
     
     public static String getTxt(DatosCabeceraFactura datosCabecera, 
@@ -152,6 +158,12 @@ public class GenTxtFactura {
     
     public static void main(String[] args){
         
+         String numeroFactura ="001001000000155";
+        String secFactura = numeroFactura.substring(6);
+        
+        System.out.println(secFactura);
+        
+        /*
         Pattern pattern = Pattern.compile("\\{(.*?)\\}");
         Matcher m = pattern.matcher("FOO{BAR}asfsd{23} asdfasdf{hola:3}");
         while (m.find()) {
@@ -159,6 +171,7 @@ public class GenTxtFactura {
             System.out.println(s);
             // s now contains "BAR"
         }
+            */
         
     }
     

@@ -37,6 +37,7 @@ import smf.entity.Articulos;
 import smf.entity.Caja;
 import smf.entity.Clientes;
 import smf.entity.Ctes;
+import smf.entity.Facturas;
 import smf.entity.Secuencias;
 import smf.gui.BaseFrame;
 import smf.gui.SmartFactMain;
@@ -44,7 +45,6 @@ import smf.gui.merc.unid.IListenerSelectUnity;
 import smf.gui.merc.unid.PreciosXUnidadFrame;
 import smf.util.ArticulosModelListener;
 import smf.util.DatosCabeceraFactura;
-import smf.util.EntityManagerUtil;
 import smf.util.datamodels.FacturaDataModel;
 import smf.util.FacturaModelListener;
 import smf.util.FechasUtil;
@@ -66,7 +66,7 @@ import smf.util.datamodels.rows.FilaUnidadPrecio;
  *
  * @author Usuario
  */
-public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity{
+public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity, IFacturaEdit{
     
     private final FacturaDataModel facturaDataModel;
     private final FacturaModelListener facturaModelListener;
@@ -86,12 +86,14 @@ public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity
     private Map<Integer, FilaPago> pagosMap;
     private Integer tra_codigo;
     private JFrame root;
+    private IAdminVentas adminVentasFrame;
     private PagosEfectByCaja pagosEfectByCajaFrame;
+    private Integer idFactura;
     
     /**
      * Creates new form FacturaVentaFrame
      */
-    public FacturaVentaFrame(Integer tra_codigo) {
+    public FacturaVentaFrame(Integer tra_codigo, Integer idFactura) {
         super();
         initComponents();
         
@@ -235,8 +237,16 @@ public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity
         cajaJpaController = new CajaJpaController(em);
       
         jTableArts.updateUI();
-        initNewFactura(false);
-    }
+        
+        this.idFactura = idFactura;
+        
+        if (this.idFactura != null){
+           loadDatosFactura(this.idFactura);
+        }
+        else{
+            initNewFactura(false);
+        }        
+    }    
     
     public void checkStatusBtn(){        
         boolean isEnabled = jTableFactura.getSelectedRows().length>0;
@@ -245,12 +255,10 @@ public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity
         jBtnDescuentos.setEnabled(isEnabled);
     }
     
-    public void loadDatosCli(String cliCi){
-        
+    public void loadDatosCli(String cliCi){        
         this.jTFCI.setText(cliCi.trim());
         this.jCBConsFinal.setSelected(false);
-        findCliente();
-        
+        findCliente();        
     }
     
     public void checkSaveStatusBtn(){
@@ -325,9 +333,131 @@ public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity
         return resultAperturaCaja;
     }
     
+    public void loadDatosFactura(Integer idFactura){        
+        
+        this.idFactura = idFactura;
+        
+        List<Object[]> detalles = facturaController.listarDetalles(idFactura);
+        Facturas  factura = facturaController.buscar(idFactura); 
+        
+        jTFDescGlobal.setText(NumbersUtil.round(factura.getFactDescg(),4).toPlainString());
+        
+        facturaDataModel.getItems().clear();
+        
+        facturaDataModel.loadItems(detalles);  
+        facturaDataModel.fireTableDataChanged();
+        jTableFactura.updateUI();
+        updateLabelsTotales();
+        
+        List<Object[]> pagosList  = facturaController.getPagos(idFactura);        
+        
+        
+        jTFEfectivo.setText("0.0");
+        jTFCredito.setText("0.0");
+        jTFTotalPagos.setText(BigDecimal.ZERO.toPlainString());
+
+        if (pagosList != null){
+            for (Object[] filaPago: pagosList){
+                BigDecimal monto = (BigDecimal)filaPago[1]; 
+                BigDecimal saldo = (BigDecimal)filaPago[2]; 
+                //Integer spId =  (Integer)filaPago[4];
+                Integer fpId =  (Integer)filaPago[5];
+                String observ  = (String)filaPago[3];
+                if (fpId == 1){
+                    jTFEfectivo.setText( NumbersUtil.round(monto, 2).toPlainString() );
+                }
+                else if (fpId == 2){                   
+                    jTFCredito.setText(NumbersUtil.round(monto, 2).toPlainString());
+                    jTextAreaObs.setText(observ);
+                }
+            }    
+        }
+        
+        String numeroFactura = factura.getFactNum();
+        
+        if (this.tra_codigo == 1)//Factura de venta:
+        {   
+            this.jLabelRef.setText("Cliente");
+                
+            String estabPtoEmi = "";
+            Ctes ctesStab = ctesController.findByClave("ESTAB");
+
+            if (ctesStab == null){
+                JOptionPane.showMessageDialog(this, "ERROR:No se a registrado ESTAB en ctes", "ERROR CONFIG", JOptionPane.ERROR_MESSAGE);
+            }
+            else{
+                estabPtoEmi = ctesStab.getCtesValor();
+            }
+
+            Ctes ctesPtoEmi = ctesController.findByClave("PTOEMI");
+
+            if (ctesPtoEmi == null){
+                JOptionPane.showMessageDialog(this, "ERROR:No se a registrado ESTAB en ctes", "ERROR CONFIG", JOptionPane.ERROR_MESSAGE);
+            }
+            else{
+                estabPtoEmi = estabPtoEmi+ctesStab.getCtesValor();        
+            }
+
+            this.jLabelEstPtoEmi.setText(estabPtoEmi);
+            
+            jTFNumFact.setText(numeroFactura.substring(6));
+        
+        }        
+        else if (this.tra_codigo == 2){            
+            this.jLabelRef.setText("Proveedor");
+            this.jLabelEstPtoEmi.setText("");
+            this.jTFNumFact.setText(numeroFactura);            
+        }
+        
+        //fecha de emsion
+        this.jTFFecha.setText( FechasUtil.format(factura.getFactFecha()) );
+        Clientes cliente = factura.getCliId();
+        
+        this.cliCodigo = cliente.getCliId();
+        
+        //Limpiar items vendidos y encerear totales
+        this.jTFCI.setText(cliente.getCliCi());
+        this.jTFCliente.setText(String.format(cliente.getCliNombres()));
+        this.jTFDireccion.setText(StringUtil.checkNull(cliente.getCliDir()));
+        this.jTFTelf.setText(StringUtil.checkNull(cliente.getCliDir()));
+        this.jTFEmail.setText(StringUtil.checkNull(cliente.getCliEmail()));
+        
+        if (this.tra_codigo ==1 ){            
+            if ("9999999999".equalsIgnoreCase(cliente.getCliCi())){
+                this.jCBConsFinal.setSelected(true);
+            }
+            else{
+                this.jCBConsFinal.setSelected(false);
+            }
+        }
+        else if (this.tra_codigo == 2){
+            this.jCBConsFinal.setSelected(false);  
+            this.jCBConsFinal.setEnabled(false);
+        }    
+        
+        enableDisableCamposCli(false);
+        enableDisNumFact(false);
+        this.jCBConsFinal.setEnabled(false);
+        
+        this.jTFVuelto.setText("");
+        this.jLabelVuelto.setText("");
+        
+        filtroTF.setText("");
+        filtroTF.requestFocus();
+        
+        pagosMap = new HashMap<Integer, FilaPago>();
+        pagosMap.put(1, new FilaPago(1, "EFECTIVO", BigDecimal.ZERO, ""));
+        pagosMap.put(2, new FilaPago(2, "CRÉDITO", BigDecimal.ZERO, ""));
+        
+        jTFTotalPagos.setText(NumbersUtil.round2ToStr(factura.getFactTotal()));
+        
+    }
+    
     public void initNewFactura(boolean doFilter){        
         
-        this.em = EntityManagerUtil.createEntintyManagerFactory();        
+        //this.em = EntityManagerUtil.createEntintyManagerFactory();     
+        
+        this.idFactura = null;
         
         if (this.tra_codigo == 1)//Factura de venta:
         {   
@@ -364,8 +494,8 @@ public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity
             }
         
         }        
-        else if (this.tra_codigo == 2){
-            
+        else if (this.tra_codigo == 2){            
+            this.jCBConsFinal.setEnabled(false);
             this.jLabelRef.setText("Proveedor");
             this.jLabelEstPtoEmi.setText("");
             this.jTFNumFact.setText("");
@@ -403,6 +533,8 @@ public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity
             this.clearCliente();
             enableDisableCamposCli(true);
         }        
+        
+        enableDisNumFact(true);
         
         this.jTFVuelto.setText("");
         this.jLabelVuelto.setText("");        
@@ -508,6 +640,16 @@ public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity
         }
     }
 
+    public IAdminVentas getAdminVentasFrame() {
+        return adminVentasFrame;
+    }
+
+    public void setAdminVentasFrame(IAdminVentas adminVentasFrame) {
+        this.adminVentasFrame = adminVentasFrame;
+    }
+    
+     
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -595,6 +737,7 @@ public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity
         jTableArts = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1200, 830));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowActivated(java.awt.event.WindowEvent evt) {
                 formWindowActivated(evt);
@@ -1097,10 +1240,22 @@ public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    
+    public void logicaCloseFrame(Integer pidFactura){
+        if (pidFactura != null && pidFactura!=0){
+            adminVentasFrame.logicaBuscar();
+            setVisible(false);
+        }
+        else{
+            SmartFactMain farmaApp = (SmartFactMain)this.root;        
+            farmaApp.logicaClosePane(this.getClass().getName()+this.tra_codigo);
+        }
+    }
+        
+        
     private void jButtonSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSalirActionPerformed
-        //setVisible(false);        
-        SmartFactMain farmaApp = (SmartFactMain)this.root;        
-        farmaApp.logicaClosePane(this.getClass().getName()+this.tra_codigo);
+        logicaCloseFrame(this.idFactura);
     }//GEN-LAST:event_jButtonSalirActionPerformed
     
     public void addArticulo(Articulos articulo, Integer catCajaId){        
@@ -1204,6 +1359,7 @@ public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity
             cabeceraFactura.setEmail(this.jTFEmail.getText());
             cabeceraFactura.setFechaFactura(this.jTFFecha.getText());
             cabeceraFactura.setTraCodigo(this.tra_codigo);
+            cabeceraFactura.setFactId(this.idFactura);
             
             TotalesFactura totalesFactura = facturaDataModel.getTotalesFactura();
             
@@ -1212,12 +1368,21 @@ public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity
             List<FilaPagoByCaja> pagosByCaja = pagosEfectByCajaFrame.getItems();
             Integer factIdGen = facturaController.crearFactura(cabeceraFactura, totalesFactura, detalles, pagosMap, pagosByCaja);
             
+            boolean isFactEdit = idFactura != null && idFactura!=0;
+            
             initNewFactura(true);
             
-            int res = JOptionPane.showConfirmDialog(this, "Registrado Satisfactoriamente, Imprimir?", "Comprobante", JOptionPane.YES_NO_OPTION);
-            if (res == JOptionPane.YES_OPTION){
-                logicaImpresion(cabeceraFactura, totalesFactura, detalles, factIdGen);
+            if (isFactEdit){    
+                SmartFactMain.showSystemTrayMsg("Registrado satisfactoriamente");
+                logicaCloseFrame(cabeceraFactura.getFactId());
             }
+            else{
+                int res = JOptionPane.showConfirmDialog(this, "Registrado Satisfactoriamente, Imprimir?", "Comprobante", JOptionPane.YES_NO_OPTION);
+                if (res == JOptionPane.YES_OPTION){
+                    logicaImpresion(cabeceraFactura, totalesFactura, detalles, factIdGen);
+                }  
+            }
+            
                     
         }
         catch(Throwable ex){
@@ -1239,6 +1404,7 @@ public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity
             cabeceraFactura.setNroEstFact(jLabelEstPtoEmi.getText());
             cabeceraFactura.setNumFactura(jTFNumFact.getText());
             cabeceraFactura.setTraCodigo(this.tra_codigo);
+            cabeceraFactura.setFactId(this.idFactura);
             
             boolean permitConsFinal = this.tra_codigo == 1;
             
@@ -1303,10 +1469,20 @@ public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity
             }
             else{
                 Integer factIdGen = facturaController.crearFactura(cabeceraFactura, totalesFactura, detalles, pagosMap, null);
+                
+                boolean isFactEdit = idFactura != null && idFactura!=0;
+                
                 initNewFactura(true);
-                int res = JOptionPane.showConfirmDialog(this, "Registrado satisfactoriamente, Imprimir?", "Comprobante", JOptionPane.YES_NO_OPTION);
-                if (res == JOptionPane.YES_OPTION){
-                    logicaImpresion(cabeceraFactura, totalesFactura, detalles, factIdGen);
+                
+                if (isFactEdit){
+                    SmartFactMain.showSystemTrayMsg("Registrado satisfactoriamente");
+                    logicaCloseFrame(cabeceraFactura.getFactId());
+                }
+                else{
+                    int res = JOptionPane.showConfirmDialog(this, "Registrado satisfactoriamente, Imprimir?", "Comprobante", JOptionPane.YES_NO_OPTION);
+                    if (res == JOptionPane.YES_OPTION){
+                        logicaImpresion(cabeceraFactura, totalesFactura, detalles, factIdGen);
+                    }
                 }
             }
             
@@ -1325,6 +1501,11 @@ public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity
         if (enable){
             this.jTFCI.requestFocus();
         }
+    }
+    
+    public void enableDisNumFact(boolean enable){
+        this.jTFNumFact.setEnabled(enable);
+        this.jTFFecha.setEnabled(enable);
     }
     
     private void jCBConsFinalPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jCBConsFinalPropertyChange

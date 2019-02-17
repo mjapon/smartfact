@@ -21,6 +21,7 @@ public class DatosCabeceraFactura {
     private String email;    
     private String fechaFactura;
     private Integer traCodigo;
+    private Integer factId;
 
     public String getNroEstFact() {
         return nroEstFact;
@@ -101,6 +102,16 @@ public class DatosCabeceraFactura {
     public void setTraCodigo(Integer traCodigo) {
         this.traCodigo = traCodigo;
     }
+
+    public Integer getFactId() {
+        return factId;
+    }
+
+    public void setFactId(Integer factId) {
+        this.factId = factId;
+    }
     
+    
+     
     
 }

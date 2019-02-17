@@ -14,7 +14,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import smf.entity.Articulos;
 import smf.gui.SmartFactMain;
-import smf.gui.facte.FacturaVentaFrame;
+import smf.gui.facte.IFacturaEdit;
 import smf.util.CtesU;
 import smf.util.datamodels.rows.FilaFactura;
 import smf.util.TotalesFactura;
@@ -25,7 +25,6 @@ import smf.util.TotalesFactura;
 public class FacturaDataModel extends AbstractTableModel{
     
     public enum ColumnaFacturaEnum{
-        //NRO(0, "Nro", Integer.class),
         CODBAR(0, "Codbar", String.class),
         ARTICULO(1, "Artículo", String.class),
         CANTIDAD(2, "Cant", Double.class),
@@ -64,7 +63,7 @@ public class FacturaDataModel extends AbstractTableModel{
         }
     };
     
-    protected FacturaVentaFrame frame;    
+    protected IFacturaEdit frame;
     protected List<FilaFactura> items = new ArrayList<>();
     protected TotalesFactura totalesFactura;
     protected JTable jtable;
@@ -80,6 +79,37 @@ public class FacturaDataModel extends AbstractTableModel{
         items.remove(rowIndex);
         totalizarFactura();
         fireTableDataChanged();
+    }
+        
+    /**
+     * Metodo para precargar datos, se una en la edicion de una factura*/
+    public void loadItems(List<Object[]> detallesList){
+        
+        for (Object[] item: detallesList){
+            
+            FilaFactura filafactura = new FilaFactura(1,
+                (Integer)item[1],
+                (String)item[7],
+                (String)item[6],
+                ((BigDecimal)item[3]).doubleValue(),
+                (BigDecimal)item[2],
+                    (Boolean)item[4],
+                (BigDecimal)item[8],
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                    (String)item[11],
+                    0
+            );
+            
+            filafactura.setDescuento(item[5]!=null?(BigDecimal)item[5]:BigDecimal.ZERO);
+        
+            filafactura.updateTotales();
+            items.add(filafactura);
+            totalizarFactura();
+            fireTableDataChanged();
+        
+        }         
     }
     
     public void addItem(Articulos articulo, Integer catCajaId){
@@ -130,47 +160,13 @@ public class FacturaDataModel extends AbstractTableModel{
     }
 
      @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex) {   
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
         
         if (columnIndex == ColumnaFacturaEnum.VDESC.index){
-            
-            /*
-            DescComboBoxEditor editor = (DescComboBoxEditor)this.jtable.getCellEditor(rowIndex, columnIndex);
-            FilaFactura filafactura = (FilaFactura)this.items.get(rowIndex);
-
-            BigDecimal precioMinimo = filafactura.getPrecioMinimo();
-            BigDecimal precioNormal = filafactura.getPrecioUnitario();
-            if (precioMinimo == null) {
-              precioMinimo = BigDecimal.ZERO;
-            }
-            if (precioNormal == null) {
-              precioNormal = BigDecimal.ZERO;
-            }
-            BigDecimal maxDescuento = precioNormal.subtract(precioMinimo);
-            if (maxDescuento.compareTo(BigDecimal.ZERO) < 0) {
-              maxDescuento = BigDecimal.ZERO;
-            }
-            maxDescuento = maxDescuento.setScale(2, 4);
-            
-            String[] colvalues;
-            if (maxDescuento.compareTo(BigDecimal.ZERO)==0){
-                colvalues = new String[0];
-            }
-            else{
-                colvalues = new String[1];
-                colvalues[0] = maxDescuento.toPlainString();
-            }
-            
-            System.out.println("Actualizando valores del combo de descuentos------>");
-            editor.updateCombo(colvalues);
-            */
-            System.out.println("Col valor de descuento se retura editable true-->" );
             return true;
         }
         else{
-            
-            FilaFactura filafactura = getValueAt(rowIndex);
-            
+            FilaFactura filafactura = getValueAt(rowIndex);            
             return (columnIndex == ColumnaFacturaEnum.IVA.index)
                ||(
                     (columnIndex == ColumnaFacturaEnum.PRECIOU.index)&&(tra_codigo==2)
@@ -316,7 +312,6 @@ public class FacturaDataModel extends AbstractTableModel{
             totalesFactura.setDescuentoGlobal(BigDecimal.ZERO);
             frame.setValueDescGlobal(totalesFactura.getDescuentoGlobal());
             SmartFactMain.showSystemTrayMsg("El valor del descuente global es incorrecto");
-            //throw  new ErrorValidException("El valor del descuente global es incorrecto");
         }
         
         frame.updateLabelsTotales();
@@ -338,11 +333,11 @@ public class FacturaDataModel extends AbstractTableModel{
         this.totalesFactura = totalesFactura;
     }
 
-    public FacturaVentaFrame getFrame() {
+    public IFacturaEdit getFrame() {
         return frame;
     }
 
-    public void setFrame(FacturaVentaFrame frame) {
+    public void setFrame(IFacturaEdit frame) {
         this.frame = frame;
     }
     

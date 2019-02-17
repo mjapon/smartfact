@@ -1458,6 +1458,18 @@ public class FacturasJpaController extends BaseJpaController<Facturas> implement
         return null;
     }
     
+    public Integer getEstadoCaja(Integer factId){
+        String sql = "select cj.cj_estado from facturas f \n" +
+                    "join cajas cj on f.caja_id = cj.cj_id \n" +
+                    "where f.fact_id = %d";
+        Object estadoCaja =  getResultFirstItemNQ(String.format(sql, factId));
+        if (estadoCaja!=null){
+            return (Integer)estadoCaja;
+        }
+        return null;
+    }
+            
+    
     public BigDecimal getUtilidadVenta(List<FilaFactura> detalles, BigDecimal descGlobal){
         BigDecimal utilidad = BigDecimal.ZERO;
         
@@ -1750,6 +1762,14 @@ public class FacturasJpaController extends BaseJpaController<Facturas> implement
                     clienteFactura.setCliEmail( datosCabecera.getEmail()); 
                 }                
             }
+            
+            
+            //Verificar si se esta editando una factura en tal caso, se debe anular primero la factura anterior
+            if (datosCabecera.getFactId()!=null && datosCabecera.getFactId()>0){
+                Facturas facturaAnt = em.find(Facturas.class, datosCabecera.getFactId());
+                facturaAnt.setFactValido(2);
+                em.persist(facturaAnt);
+            }
 
             Facturas factura = new Facturas();
             factura.setCliId(clienteFactura);
@@ -1776,7 +1796,7 @@ public class FacturasJpaController extends BaseJpaController<Facturas> implement
             factura.setFactDesc(totalesFact.getDescuento());
             factura.setFactDescg(totalesFact.getDescuentoGlobal());
 
-            factura.setFactFecha(new Date());
+            factura.setFactFecha(FechasUtil.parse(datosCabecera.getFechaFactura()));
             factura.setFactFecreg(new Date());
             factura.setFactValido(0);
             
@@ -1879,7 +1899,11 @@ public class FacturasJpaController extends BaseJpaController<Facturas> implement
 
             //Se debe actualizar el numero de secuencia de la factura
             SecuenciasJpaController secuenciasController = new SecuenciasJpaController(em);
-            secuenciasController.genSecuencia("EST001");
+            if (esFacturaVenta){
+                if (datosCabecera.getFactId()==null){
+                    secuenciasController.genSecuencia("EST001");
+                }
+            }
             
             em.flush();
             em.getTransaction().commit();     

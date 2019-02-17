@@ -33,6 +33,10 @@ public class StringUtil {
         return String.format("%-"+length+"s", cad).replace(' ', ' ');
     }
     
+    public static String checkNull(String string){
+        return string!=null?string:"";
+    }
+    
     public static void main(String args[]){
         System.out.println("test ..Z>");        
         System.out.println(format("{0} es {1}","cero", "uno"));

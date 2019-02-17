@@ -109,7 +109,17 @@ public class SmartFactMain extends javax.swing.JFrame {
                     if (homeFrame != null){
                         homeFrame.updateGraphics();
                     }
-                }                
+                }  
+                else if ("Administrar Ventas".equalsIgnoreCase(title)){
+                    EstadoAPP estadoApp = estadosApp.get(AdminVentasFrame.class.getName()+"1");
+                    AdminVentasFrame frame = (AdminVentasFrame)estadoApp.getFrame();
+                    frame.logicaBuscar();
+                }
+                else if("Administrar Compras".equalsIgnoreCase(title)){
+                    EstadoAPP estadoApp = estadosApp.get(AdminVentasFrame.class.getName()+"2");
+                    AdminVentasFrame frame = (AdminVentasFrame)estadoApp.getFrame();
+                    frame.logicaBuscar();
+                }
             }
           };        
         this.tabbedPaneMain.addChangeListener(changeListener);
@@ -123,7 +133,7 @@ public class SmartFactMain extends javax.swing.JFrame {
             
             if (tra_codigo == 1){
                 //Facturacion
-                FacturaVentaFrame newFacturaFrame = new FacturaVentaFrame(1);                
+                FacturaVentaFrame newFacturaFrame = new FacturaVentaFrame(1, null);                
                 newFacturaFrame.setRoot(this);
                 EstadoAPP facturaEstadoAPP = new EstadoAPP(newFacturaFrame.getContentPane(), icon, "Factura de Venta", newFacturaFrame);        
 
@@ -131,7 +141,7 @@ public class SmartFactMain extends javax.swing.JFrame {
             }
             else if (tra_codigo == 2){                
                 //Factura de compras
-                FacturaVentaFrame newFacturaFrame = new FacturaVentaFrame(2);                
+                FacturaVentaFrame newFacturaFrame = new FacturaVentaFrame(2, null);                
                 newFacturaFrame.setRoot(this);
                 EstadoAPP facturaEstadoAPP = new EstadoAPP(newFacturaFrame.getContentPane(), icon, "Factura de Compra", newFacturaFrame);        
 
