@@ -279,8 +279,6 @@ public class SmartFactMain extends javax.swing.JFrame {
         jMIUnidades = new javax.swing.JMenuItem();
         contabMenu = new javax.swing.JMenu();
         planCuentasMI = new javax.swing.JMenuItem();
-        jMICats1 = new javax.swing.JMenuItem();
-        jMIUnidades1 = new javax.swing.JMenuItem();
         cajasMenu = new javax.swing.JMenu();
         movsCajaMenuItem = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -454,24 +452,6 @@ public class SmartFactMain extends javax.swing.JFrame {
             }
         });
         contabMenu.add(planCuentasMI);
-
-        jMICats1.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        jMICats1.setText("Categorías");
-        jMICats1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMICats1ActionPerformed(evt);
-            }
-        });
-        contabMenu.add(jMICats1);
-
-        jMIUnidades1.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        jMIUnidades1.setText("Unidades");
-        jMIUnidades1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMIUnidades1ActionPerformed(evt);
-            }
-        });
-        contabMenu.add(jMIUnidades1);
 
         menuBar.add(contabMenu);
 
@@ -925,14 +905,6 @@ public class SmartFactMain extends javax.swing.JFrame {
     private void planCuentasMIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_planCuentasMIActionPerformed
         showPlanCuentasFrame();
     }//GEN-LAST:event_planCuentasMIActionPerformed
-
-    private void jMICats1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMICats1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jMICats1ActionPerformed
-
-    private void jMIUnidades1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMIUnidades1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jMIUnidades1ActionPerformed
     
     public void showPlanCuentasFrame(){
         PlanCuentasFrame planCuentasFrame = new PlanCuentasFrame();
@@ -1037,10 +1009,8 @@ public class SmartFactMain extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMIAdminCli;
     private javax.swing.JMenuItem jMIAdminProv;
     private javax.swing.JMenuItem jMICats;
-    private javax.swing.JMenuItem jMICats1;
     private javax.swing.JMenuItem jMITiposCaja;
     private javax.swing.JMenuItem jMIUnidades;
-    private javax.swing.JMenuItem jMIUnidades1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuItem jMenuItem1;
