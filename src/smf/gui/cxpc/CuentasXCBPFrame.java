@@ -66,7 +66,7 @@ public class CuentasXCBPFrame extends BaseFrame {
         jPanel12.add( desdeTF );
         jPanel12.add( hastaTF );
         
-        this.em = EntityManagerUtil.createEntintyManagerFactory();
+        this.em = EntityManagerUtil.createEntityManagerFactory();
         this.facturaController = new FacturasJpaController(em);
         this.movsController = new MovtransaccJpaController(em);        
         

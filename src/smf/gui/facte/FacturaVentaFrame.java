@@ -45,6 +45,7 @@ import smf.gui.merc.unid.IListenerSelectUnity;
 import smf.gui.merc.unid.PreciosXUnidadFrame;
 import smf.util.ArticulosModelListener;
 import smf.util.DatosCabeceraFactura;
+import smf.util.EntityManagerUtil;
 import smf.util.datamodels.FacturaDataModel;
 import smf.util.FacturaModelListener;
 import smf.util.FechasUtil;
@@ -455,7 +456,7 @@ public class FacturaVentaFrame extends BaseFrame implements IListenerSelectUnity
     
     public void initNewFactura(boolean doFilter){        
         
-        //this.em = EntityManagerUtil.createEntintyManagerFactory();     
+        this.em = EntityManagerUtil.createEntityManagerFactory();     
         
         this.idFactura = null;
         

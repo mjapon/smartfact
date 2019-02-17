@@ -29,7 +29,7 @@ public class JComboBoxFilterMain {
       List<Articulos> employees = null;
       
       try{
-          em = EntityManagerUtil.createEntintyManagerFactory();
+          em = EntityManagerUtil.createEntityManagerFactory();
           articulosController = new ArticulosJpaController(em);
           // = articulosController.listar("artNombre", "asc");          
           employees =  articulosController.listar("artNombre", "asc");

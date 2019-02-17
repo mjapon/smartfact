@@ -56,7 +56,7 @@ public class AdminVentasFrame extends BaseFrame implements ISearchArt, IAdminVen
      */
     public AdminVentasFrame(Integer tra_codigo) {
         
-        this.em = EntityManagerUtil.createEntintyManagerFactory();
+        this.em = EntityManagerUtil.createEntityManagerFactory();
         
         initComponents();
         
@@ -695,7 +695,11 @@ public class AdminVentasFrame extends BaseFrame implements ISearchArt, IAdminVen
             else{
                 FacturaVentaFrame facturaVentaFrame = new FacturaVentaFrame(this.tra_codigo, filart.getVentaId());
                 facturaVentaFrame.setAdminVentasFrame(this);
+                
+                facturaVentaFrame.setPreferredSize(new Dimension(1400, 900));
                 facturaVentaFrame.restoreDefaultsDividerLocation();
+                facturaVentaFrame.pack();
+                
                 facturaVentaFrame.centerOnScreen();
                 facturaVentaFrame.setVisible(true);
             }

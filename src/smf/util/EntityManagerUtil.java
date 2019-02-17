@@ -15,7 +15,7 @@ import javax.persistence.Persistence;
  */
 public class EntityManagerUtil {
     
-    public static EntityManager createEntintyManagerFactory(){
+    public static EntityManager createEntityManagerFactory(){
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("FARMAJJPU");
         EntityManager em = emf.createEntityManager();
         return em;

@@ -50,7 +50,7 @@ public class MovsCajaFrame extends BaseFrame {
     public MovsCajaFrame() {
         super();
         initComponents();
-        em = EntityManagerUtil.createEntintyManagerFactory();
+        em = EntityManagerUtil.createEntityManagerFactory();
         facturaController = new FacturasJpaController(em);        
         
         desdeTF = new JFormattedTextField(createFormatter("##/##/####"));

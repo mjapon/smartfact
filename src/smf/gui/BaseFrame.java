@@ -32,7 +32,7 @@ public class BaseFrame extends javax.swing.JFrame {
      * Creates new form BaseFrame
      */
     public BaseFrame() {
-        em = EntityManagerUtil.createEntintyManagerFactory();
+        em = EntityManagerUtil.createEntityManagerFactory();
     }
         
     public void showMsgError(Throwable ex, String msg){
