@@ -89,6 +89,8 @@ public class NewArtFrame extends BaseFrame {
         jTFInventario.setEnabled(false);        
         jTFPrecioCompra.setText(BigDecimal.ZERO.toPlainString());
         jTFPrecioCompra.setEnabled(false);
+        jCBProveedor.setEnabled(false);
+        jTFFechaCadu.setEnabled(false);
         Integer secServ = secuenciasController.getSecuenciaValue(SEC_SERVS);
         if (secServ != null){
             jTFCodBarra.setText("SERV_"+secServ);
@@ -101,6 +103,8 @@ public class NewArtFrame extends BaseFrame {
         jTFCodBarra.setText("");
         jTFPrecioCompra.setText(BigDecimal.ZERO.toPlainString());
         jTFPrecioCompra.setEnabled(true);
+        jCBProveedor.setEnabled(true);
+        jTFFechaCadu.setEnabled(true);
     }
     
     public void loadCats(){
@@ -318,11 +322,30 @@ public class NewArtFrame extends BaseFrame {
                 valorIvaPC = precioCompra.multiply(new BigDecimal(CtesU.IVA)).setScale(2, RoundingMode.HALF_UP);
             }
             
-            BigDecimal precioCompraIva = new BigDecimal(jTFPrecioCompra.getText().trim()).add(valorIvaPC);
+            BigDecimal precioCompraIva = BigDecimal.ZERO;
+            
+            if (jTFPrecioCompra.getText().trim().length()>0){
+                precioCompraIva = new BigDecimal(jTFPrecioCompra.getText().trim()).add(valorIvaPC);
+            }
+                    
             BigDecimal precioCompraConIva = precioCompraIva;
-            BigDecimal precioVentaConIva = new BigDecimal(jTFPrecioVenta.getText().trim());
-            BigDecimal precioMinConIva = new BigDecimal(jTFPrecioMinimo.getText().trim());
-            BigDecimal inventario = new BigDecimal(jTFInventario.getText().trim());
+            
+            BigDecimal precioVentaConIva = BigDecimal.ZERO;
+            
+            if (jTFPrecioVenta.getText().trim().length()>0){
+                precioVentaConIva =new BigDecimal(jTFPrecioVenta.getText().trim());
+            }
+                    
+            BigDecimal precioMinConIva = BigDecimal.ZERO;
+            
+            if (jTFPrecioMinimo.getText().trim().length()>0){
+                precioMinConIva = new BigDecimal(jTFPrecioMinimo.getText().trim());
+            }
+            
+            BigDecimal inventario = BigDecimal.ZERO;
+            if (jTFInventario.getText().trim().length()>0){
+                inventario =new BigDecimal(jTFInventario.getText().trim());
+            }
 
             boolean genCodbar = false;
             if (genCodbar){
@@ -337,9 +360,14 @@ public class NewArtFrame extends BaseFrame {
                     isIvaTrue, inventario, selectedCat.getCatName(), tipo, 
                     selectedCat.getCatId(), selectedCat.getCatCaja());
             
-            Clientes proveedor = (Clientes)jCBProveedor.getSelectedItem();
-            if (proveedor != null){
-                auxfilaArt.setProveedorId(proveedor.getCliId());
+            if (jCBProveedor.isEnabled()){
+                Clientes proveedor = (Clientes)jCBProveedor.getSelectedItem();
+                if (proveedor != null){
+                    auxfilaArt.setProveedorId(proveedor.getCliId());
+                }
+            }
+            else{
+                 auxfilaArt.setProveedorId(-1);   
             }
             
             FilaArticulo filaArt  = new FilaArticulo(artId, 

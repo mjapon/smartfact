@@ -7,14 +7,20 @@ package smf.gui.tickets;
 
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
+import java.util.Map;
+import javax.swing.SwingUtilities;
+import smf.controller.ArticulosJpaController;
 import smf.controller.ClientesJpaController;
 import smf.controller.CtesJpaController;
+import smf.controller.FacturasJpaController;
 import smf.controller.SecuenciasJpaController;
 import smf.controller.TicketsJpaController;
 import smf.entity.Clientes;
 import smf.gui.BaseFrame;
 import smf.util.FechasUtil;
+import smf.util.ItemFusay;
 import smf.util.PrintFactUtil;
+import smf.util.StringUtil;
 import smf.util.datamodels.rows.TicketRow;
 
 /**
@@ -26,9 +32,12 @@ public class NewTicketFrame extends BaseFrame {
     private TicketsJpaController controller;
     private SecuenciasJpaController seccontroller;
     private ClientesJpaController clientesCntrl;
+    private ArticulosJpaController articulosCntrl;
     private CtesJpaController ctesJpaController;
     private Integer cliCodigo;
     private TicketsFrame ticketsFrame; 
+    private Map<Character,ItemFusay> mapArticulos;
+    private FacturasJpaController facturasCntrl;
 
     /**
      * Creates new form NewTicketFrame
@@ -40,6 +49,8 @@ public class NewTicketFrame extends BaseFrame {
         seccontroller = new SecuenciasJpaController(em);
         clientesCntrl = new ClientesJpaController(em);
         ctesJpaController = new CtesJpaController(em);
+        articulosCntrl = new ArticulosJpaController(em);
+        facturasCntrl = new FacturasJpaController(em);
         
         initForm();
         
@@ -63,6 +74,16 @@ public class NewTicketFrame extends BaseFrame {
         jTFNomapel.setText("");
         jTFDireccion.setText("");
         
+        /*
+        try{
+            mapArticulos = articulosCntrl.listarTiposFusay();
+        }
+        catch(Throwable ex){
+            showMsgError(ex);
+            logError(ex);
+        }
+        */
+        
     }
     
     /**
@@ -79,6 +100,11 @@ public class NewTicketFrame extends BaseFrame {
         jButtonGuardr = new javax.swing.JButton();
         jButtonCerrar = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTAObs = new javax.swing.JTextArea();
+        jPanel6 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jTFFecha = new javax.swing.JTextField();
@@ -94,14 +120,19 @@ public class NewTicketFrame extends BaseFrame {
         jTFTelf = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jTFMonto = new javax.swing.JTextField();
-        jPanel5 = new javax.swing.JPanel();
-        jLabel7 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTAObs = new javax.swing.JTextArea();
+        jPanel7 = new javax.swing.JPanel();
+        jCBKambo = new javax.swing.JCheckBox();
+        jCBCeremonia = new javax.swing.JCheckBox();
+        jCBTemascal = new javax.swing.JCheckBox();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         jPanel1.setLayout(new java.awt.GridLayout(5, 1));
 
@@ -136,6 +167,21 @@ public class NewTicketFrame extends BaseFrame {
         getContentPane().add(jPanel1, java.awt.BorderLayout.EAST);
 
         jPanel2.setLayout(new java.awt.BorderLayout());
+
+        jPanel5.setLayout(new java.awt.BorderLayout());
+
+        jLabel7.setText("Observación:");
+        jPanel5.add(jLabel7, java.awt.BorderLayout.NORTH);
+
+        jTAObs.setColumns(20);
+        jTAObs.setRows(5);
+        jScrollPane1.setViewportView(jTAObs);
+
+        jPanel5.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        jPanel2.add(jPanel5, java.awt.BorderLayout.SOUTH);
+
+        jPanel6.setLayout(new java.awt.BorderLayout());
 
         jPanel4.setLayout(new java.awt.GridLayout(7, 2));
 
@@ -180,20 +226,27 @@ public class NewTicketFrame extends BaseFrame {
         jPanel4.add(jLabel6);
         jPanel4.add(jTFMonto);
 
-        jPanel2.add(jPanel4, java.awt.BorderLayout.CENTER);
+        jPanel6.add(jPanel4, java.awt.BorderLayout.CENTER);
 
-        jPanel5.setLayout(new java.awt.BorderLayout());
+        jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder("Servicios"))));
+        jPanel7.setPreferredSize(new java.awt.Dimension(200, 93));
+        jPanel7.setLayout(new java.awt.GridLayout(3, 1));
 
-        jLabel7.setText("Observación:");
-        jPanel5.add(jLabel7, java.awt.BorderLayout.NORTH);
+        jCBKambo.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        jCBKambo.setText("Kambo");
+        jPanel7.add(jCBKambo);
 
-        jTAObs.setColumns(20);
-        jTAObs.setRows(5);
-        jScrollPane1.setViewportView(jTAObs);
+        jCBCeremonia.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        jCBCeremonia.setText("Ceremonia");
+        jPanel7.add(jCBCeremonia);
 
-        jPanel5.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+        jCBTemascal.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        jCBTemascal.setText("Temascal");
+        jPanel7.add(jCBTemascal);
 
-        jPanel2.add(jPanel5, java.awt.BorderLayout.SOUTH);
+        jPanel6.add(jPanel7, java.awt.BorderLayout.EAST);
+
+        jPanel2.add(jPanel6, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 
@@ -221,7 +274,6 @@ public class NewTicketFrame extends BaseFrame {
                     this.jTFDireccion.setText( cliente.getCliDir() );
                     this.jTFTelf.setText(cliente.getCliTelf());
                     this.cliCodigo = cliente.getCliId();
-
                 }
                 else{
                     this.jTFNomapel.setText( "" );
@@ -241,7 +293,14 @@ public class NewTicketFrame extends BaseFrame {
     }//GEN-LAST:event_jButtonGuardr1ActionPerformed
 
     private void jButtonGuardrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGuardrActionPerformed
-        try{
+        try{            
+            //Validar que se ingrese el numero de cedula o el nombre del paciente
+            if (StringUtil.isEmpty(this.jTFCi.getText())
+                    && StringUtil.isEmpty(this.jTFNomapel.getText())  ){
+                showMsg("Ingresa el nombre o el número de cédula del paciente");
+                return;
+            }
+            
             TicketRow ticketRow = new TicketRow();
 
             ticketRow.setCliId(this.cliCodigo);
@@ -254,8 +313,23 @@ public class NewTicketFrame extends BaseFrame {
             //ticketRow.setFechaCreacion(new Date());
             ticketRow.setMonto(new BigDecimal(this.jTFMonto.getText()));
             ticketRow.setTkNro( Integer.valueOf(this.jTFNroTicket.getText()) );
-            ticketRow.setTkObs( this.jTAObs.getText() );
-
+            ticketRow.setTkObs( this.jTAObs.getText() );            
+            
+            boolean isCheckKambo = jCBKambo.isSelected();
+            boolean isCheckCeremonia = jCBCeremonia.isSelected();
+            boolean isCheckTemazcal = jCBTemascal.isSelected();
+            
+            String servicios = String.format("%s:%d,%s:%d,%s:%d",
+                    "K",isCheckKambo?1:0,
+                    "C",isCheckCeremonia?1:0,
+                    "T",isCheckTemazcal?1:0
+                    );
+            
+            ticketRow.setTkServicios(servicios);
+            
+            Integer factId = facturasCntrl.crearTicket(ticketRow);
+            ticketRow.setFactId(factId);
+            
             Integer ticketid = controller.crear(ticketRow);
 
             //if (showConfirmMsg("Registro Satisfactorio, ¿Desea Imprimir?")){                    
@@ -283,6 +357,14 @@ public class NewTicketFrame extends BaseFrame {
         buscarCliente();
     }//GEN-LAST:event_jTFCiFocusLost
 
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        
+        SwingUtilities.invokeLater(() -> {
+            this.jTFCi.requestFocus();
+        });
+        
+    }//GEN-LAST:event_formWindowOpened
+
     public void logicaImprimir(Integer ticketId){
         try{
             //String textToPrint = controller.getTicketTxT(ticketid);
@@ -306,6 +388,9 @@ public class NewTicketFrame extends BaseFrame {
     private javax.swing.JButton jButtonCerrar;
     private javax.swing.JButton jButtonGuardr;
     private javax.swing.JButton jButtonGuardr1;
+    private javax.swing.JCheckBox jCBCeremonia;
+    private javax.swing.JCheckBox jCBKambo;
+    private javax.swing.JCheckBox jCBTemascal;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -320,6 +405,8 @@ public class NewTicketFrame extends BaseFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTAObs;
     private javax.swing.JTextField jTFCi;

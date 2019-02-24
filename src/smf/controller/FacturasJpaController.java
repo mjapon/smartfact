@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.sql.PreparedStatement;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
@@ -31,6 +32,7 @@ import smf.controller.exceptions.IllegalOrphanException;
 import smf.controller.exceptions.NonexistentEntityException;
 import smf.entity.Caja;
 import smf.entity.Catcajas;
+import smf.entity.Ctes;
 import smf.entity.Facturas;
 import smf.entity.Pagosfact;
 import smf.entity.Pagosfactcaja;
@@ -46,6 +48,7 @@ import smf.util.StringUtil;
 import smf.util.TotalesFactura;
 import smf.util.datamodels.rows.FilaPagoByCaja;
 import smf.util.datamodels.rows.RowFactByCaja;
+import smf.util.datamodels.rows.TicketRow;
 
 /**
  *
@@ -865,8 +868,15 @@ public class FacturasJpaController extends BaseJpaController<Facturas> implement
         List<String> paramsList = new ArrayList<String>();                        
 
         paramsList.add(prefijo+".factValido=0 ");
+        
+        if (params.getTraCodigo() == 1){
+            paramsList.add(prefijo+".traId.traId in (1,5) ");
+        }
+        else{
+            paramsList.add(prefijo+".traId.traId= "+params.getTraCodigo());
+        }
 
-        paramsList.add(prefijo+".traId.traId= "+params.getTraCodigo());
+        
 
         boolean byFiltro = false;
         
@@ -1460,9 +1470,14 @@ public class FacturasJpaController extends BaseJpaController<Facturas> implement
     
     public Integer getEstadoCaja(Integer factId){
         String sql = "select cj.cj_estado from facturas f \n" +
-                    "join cajas cj on f.caja_id = cj.cj_id \n" +
+                    "join caja cj on f.caja_id = cj.cj_id \n" +
                     "where f.fact_id = %d";
-        Object estadoCaja =  getResultFirstItemNQ(String.format(sql, factId));
+        
+        String sql2 = String.format(sql, factId);
+        System.out.println("Sql es:");
+        System.out.println(sql2);
+                
+        Object estadoCaja =  getResultFirstItemNQ(sql2);
         if (estadoCaja!=null){
             return (Integer)estadoCaja;
         }
@@ -1603,10 +1618,67 @@ public class FacturasJpaController extends BaseJpaController<Facturas> implement
     
     /**
      * Retorna las utilidades por caja para un listado de factura (Map(clave:id_caja, valor:Utilidad)
-     * @param idFacts
+     * @param idFacts 1:Utilidades efectivo, 2:utilidades credito
      * @return 
      */
-    public Map<Integer, BigDecimal> getUtilidadesMap(List<Integer> idFacts){
+    public Map<Integer, Map<Integer, BigDecimal>> getUtilidadesMap(List<Integer> idFacts){
+        
+        Map<Integer, BigDecimal> utilidadesMapEfectivo = new HashMap();
+        Map<Integer, BigDecimal> utilidadesMapCredito = new HashMap();
+        
+        Map<Integer, Map<Integer, BigDecimal>> resultMap = new HashMap();
+        
+        String idFactsString = idFacts.stream()
+        .map( n -> n.toString() )
+        .collect( Collectors.joining( "," ) ); 
+        
+        //Calculo manual de las utilidades  
+        
+        String sql = "(select sum(round(GET_UTILIDAD_FILA(det.detf_id, f.fact_id),2)) as utilidad, 1 as tipo, cc.cc_id as caja  \n" +
+        " from detallesfact det\n" +
+        "   join facturas f ON f.fact_id = det.fact_id\n" +
+        "  join pagosfact p on p.fact_id = f.fact_id and p.fp_id = 2 and p.pgf_monto = 0\n" +
+        "  join articulos a ON det.art_id = a.art_id\n" +
+        "  join categorias c on a.cat_id = c.cat_id\n" +
+        "  join catcajas cc on cc.cc_id = c.cat_caja\n" +
+        " where f.fact_valido = 0 and f.fact_id in (%s) GROUP BY  tipo, cc.cc_id)\n" +
+        " union all " +
+        " (select sum(round(GET_UTILIDAD_FILA(det.detf_id, f.fact_id),2)) as utilidad, 2 as tipo, cc.cc_id as caja  \n" +
+        " from detallesfact det\n" +
+        "   join facturas f ON f.fact_id = det.fact_id\n" +
+        "  join pagosfact p on p.fact_id = f.fact_id and p.fp_id = 2 and p.pgf_monto > 0 and p.pgf_saldo = 0\n" +
+        "  join articulos a ON det.art_id = a.art_id\n" +
+        "  join categorias c on a.cat_id = c.cat_id\n" +
+        "  join catcajas cc on cc.cc_id = c.cat_caja\n" +
+        "  join movtransacc m ON p.pgf_id = m.pgf_id and m.mov_valido = 0 and m.mov_id = (select max(m2.mov_id) from movtransacc m2 where m2.fact_id_rel = f.fact_id and m2.mov_valido = 0)\n" +
+        "  where f.fact_valido = 0 and f.fact_id in (%s)  GROUP BY tipo, cc.cc_id)\n" +
+        "  order by 2 desc, 3";
+        
+        String thequery = String.format(sql, idFactsString, idFactsString);
+        
+        Query query = newNativeQuery( thequery  );
+        
+        List<Object[]> resultList = query.getResultList();
+        
+        for (Object[] fila: resultList){
+            BigDecimal utilidad = (BigDecimal)fila[0];
+            Integer tipo = (Integer)fila[1];
+            Integer caja = (Integer)fila[2];
+            if (tipo.intValue() == 1){
+                utilidadesMapEfectivo.put(caja,utilidad);
+            }
+            else if (tipo.intValue() == 2){
+                utilidadesMapEfectivo.put(caja,utilidad);
+            }
+        }
+        
+        resultMap.put(1, utilidadesMapEfectivo);
+        resultMap.put(2, utilidadesMapCredito);
+        
+        return resultMap;
+        
+        
+        /*
         //TODO: Primero verificar si los id de las facturas todas ya han sido cancelados en el caso de facturas ha credito
                 
         String idFactsString = idFacts.stream()
@@ -1659,23 +1731,7 @@ public class FacturasJpaController extends BaseJpaController<Facturas> implement
                 if (!utilidadesMap.containsKey(catCajaId)){
                     utilidadesMap.put(catCajaId, BigDecimal.ZERO);
                 }
-
-                /*
-                Integer formaPagoId = (Integer)item[4];
-                BigDecimal montoPago = (BigDecimal)item[5];
-                BigDecimal saldoPago = (BigDecimal)item[6];
-
-                BigDecimal currentUtil = utilidadesMap.get(catCajaId);
-
-                BigDecimal newUtilidad =   currentUtil;
-
-                if (formaPagoId.intValue() ==2 && saldoPago.compareTo(BigDecimal.ZERO)>0 ){
-
-                }
-                else{
-                    newUtilidad = currentUtil.add(utilidad);
-                }
-                */
+                
                 BigDecimal currentUtil = utilidadesMap.get(catCajaId);
                 BigDecimal newUtilidad = currentUtil.add(utilidad);
 
@@ -1684,8 +1740,8 @@ public class FacturasJpaController extends BaseJpaController<Facturas> implement
             }            
         }
         
-        
         return utilidadesMap;
+        */
     }    
    
     public Boolean clienteTieneDeudas(Integer clienteId){
@@ -1696,6 +1752,138 @@ public class FacturasJpaController extends BaseJpaController<Facturas> implement
         System.out.println("Cliente tiene deudas: Resultado para count es:"+result);
         
         return result>0;
+        
+    }
+    
+    public Integer crearTicket(TicketRow ticketRow)throws Exception{
+        
+        try{
+            
+            beginTrans();
+            
+            Clientes cli = null;
+            ClientesJpaController clientesJpaController = new ClientesJpaController(em);
+            
+            String direccion = ticketRow.getCliDireccion().trim().toUpperCase();
+            String nombres = ticketRow.getCliNombres().trim().toUpperCase();
+            String cliCi = ticketRow.getCliCi().trim();
+            
+            if (ticketRow.getCliId()==null|| ticketRow.getCliId()==0){
+                //Se debe crear clientes
+                if (ticketRow.getCliCi().trim().length()>0){
+                    cli = clientesJpaController.findByCi( cliCi );
+                }
+            }
+            else{
+                cli = clientesJpaController.findById( ticketRow.getCliId() );
+            }
+            
+            if (cli ==  null){
+                if (ticketRow.getCliCi().trim().length()>0){
+                    cli = clientesJpaController.findByCi( cliCi );
+                }
+                else{
+                    //Se busca primero por nombre y direccion
+                    cli = clientesJpaController.findByNombresAndDir(nombres, direccion);
+                    if (cli == null){
+                        //Si no se encuentra se busca alguna persona con el nombre enviado (pero que no tenga numero de cedula registrado)
+                        cli = clientesJpaController.findByNombres(nombres);
+                    }
+                }                
+            }
+            
+            if (cli == null){
+                cli = new Clientes();
+                cli.setCliCi(cliCi);
+                cli.setCliNombres(nombres);
+                cli.setCliDir(direccion);
+                cli.setCliTelf(ticketRow.getCliTelf().trim());
+                cli.setCliFechareg(new Date());                
+            }
+            else{
+                cli.setCliNombres(nombres);
+                cli.setCliDir(direccion);
+                cli.setCliTelf(ticketRow.getCliTelf().trim());
+            }
+            
+            em.persist(cli);            
+            
+            Facturas factura = new Facturas();
+            factura.setCliId(cli);
+            
+            
+            factura.setFactNum(String.valueOf(ticketRow.getTkNro()));
+            factura.setFactEstab(1);
+            factura.setFactPtoemi(1);
+            factura.setFactSubt( ticketRow.getMonto() );
+            factura.setFactSubt12( BigDecimal.ZERO );
+            factura.setFactIva( BigDecimal.ZERO );
+            factura.setFactTotal( ticketRow.getMonto() );
+            factura.setFactDesc( BigDecimal.ZERO );
+            factura.setFactDescg( BigDecimal.ZERO );
+
+            //factura.setFactFecha(  FechasUtil.parse( ticketRow.getFechaCreacion() ));
+            factura.setFactFecha(new Date());
+            factura.setFactFecreg(new Date());
+            factura.setFactUtilidad(BigDecimal.ZERO);
+            factura.setFactValido(0);
+            
+            TransaccionesJpaController transaccionesJpaController = new TransaccionesJpaController(em);
+            
+            Transacciones transacc = transaccionesJpaController.findTransaccByTraId( 5 );//TODO:Quemado transaccion 5 para RECIBO
+            factura.setTraId(transacc);
+
+            factura.setUserId(1);
+            
+            CajaJpaController cajaJpaController =new CajaJpaController(em);
+            Caja caja = cajaJpaController.getLastOpenedCaja();
+            if (caja != null){
+                factura.setCajaId(caja.getCjId());
+            }
+            
+            em.persist(factura);
+            
+            Detallesfact detalle = new Detallesfact();
+            
+            CtesJpaController ctesJpaController = new CtesJpaController(em);            
+            String codArtTicket = ctesJpaController.findValueByClave("COD_ART_TICKET");
+
+            detalle.setFactId(factura);
+            detalle.setArtId( Integer.valueOf(codArtTicket) );
+            detalle.setDetfPrecio( ticketRow.getMonto() );
+            detalle.setDetfCant( BigDecimal.ONE );
+            detalle.setDetfIva( Boolean.FALSE  );
+            detalle.setDetfDesc( BigDecimal.ZERO );
+            detalle.setDetfPreciocm( BigDecimal.ZERO );
+
+            em.persist(detalle);
+            
+            Pagosfact pagoEfectivo = new Pagosfact();   
+            
+            EstadospagoJpaController estadoCtntrl = new EstadospagoJpaController(em);
+            FormaspagoJpaController formaPagoCntrl = new FormaspagoJpaController(em);
+            
+            pagoEfectivo.setFpId( formaPagoCntrl.findFormaspago(1) );//efectivo
+            pagoEfectivo.setSpId( estadoCtntrl.findEstadospago(1) );//estado pago cancelado
+            pagoEfectivo.setFactId(factura);
+            pagoEfectivo.setPgfMonto(ticketRow.getMonto() );
+            pagoEfectivo.setPgfSaldo(BigDecimal.ZERO);                
+            pagoEfectivo.setPgfObs( "" );
+            pagoEfectivo.setPgfFecreg(new Date());
+            em.persist(pagoEfectivo);
+            
+            em.flush();
+            em.getTransaction().commit();     
+            
+            return factura.getFactId();
+            
+        }
+        catch(Throwable ex){
+            logError(ex, "Error al tratar de crear ticket");
+            rollbackTrans();
+            throw  new Exception("Error al tratar de crear ticket:"+ ex.getMessage());
+            
+        }
         
     }
    

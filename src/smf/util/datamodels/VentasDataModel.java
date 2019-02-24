@@ -125,7 +125,8 @@ public class VentasDataModel extends AbstractTableModel{
         BigDecimal sumaUtilidades = BigDecimal.ZERO;
         
         totalesVentasModel = new TotalesVentasModel();
-        totalesVentasModel.setUtilidadesMap(new HashMap<>());
+        totalesVentasModel.setUtilidadesMapEfectivo(new HashMap<>());
+        totalesVentasModel.setUtilidadesMapCredito(new HashMap<>());
         
         List<Integer> idFactsList = new ArrayList();
         
@@ -155,15 +156,26 @@ public class VentasDataModel extends AbstractTableModel{
         totalesVentasModel.setUtilidades(sumaUtilidades);
         
         clearUtilidadesMap();
+        
         if (idFactsList.size()>0){
-            totalesVentasModel.setUtilidadesMap( controller.getUtilidadesMap(idFactsList) );
+            
+            Map<Integer,Map<Integer,BigDecimal>> resultMap = controller.getUtilidadesMap(idFactsList);
+            if (resultMap.containsKey(1)){
+                totalesVentasModel.setUtilidadesMapEfectivo( resultMap.get(1) );
+            }
+            if (resultMap.containsKey(2)){
+                totalesVentasModel.setUtilidadesMapCredito( resultMap.get(2) );
+            }
+            
             totalesVentasModel.setSumasCajaMap( controller.getSumasForCajaMap(idFactsList) );
-        }        
+        } 
+        
     }
     
     public void clearUtilidadesMap(){
         Map<Integer,BigDecimal> zeroUtilMap = new HashMap();
-        totalesVentasModel.setUtilidadesMap(zeroUtilMap);
+        totalesVentasModel.setUtilidadesMapCredito(zeroUtilMap);
+        totalesVentasModel.setUtilidadesMapEfectivo(zeroUtilMap);
     }
     
     public VentasDataModel(){
@@ -254,11 +266,7 @@ public class VentasDataModel extends AbstractTableModel{
             ventas = controller.listarByCat(this.params);
         }
         else{
-            //Map<Integer, List<Object[]>> resultMap = controller.listar(this.params);
             ventas = controller.listar(this.params);
-            //ventas = resultMap.get(1);
-            //2 es el listado de utilidades por categoria
-            //utilidadesList = resultMap.get(2);
         }        
         
         items.clear();

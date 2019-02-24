@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -177,6 +178,9 @@ public class TicketsFrame extends BaseFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableMain = new javax.swing.JTable();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        jTextFieldTotal = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jPanel12 = new javax.swing.JPanel();
@@ -211,6 +215,16 @@ public class TicketsFrame extends BaseFrame {
         jScrollPane1.setViewportView(jTableMain);
 
         jPanel1.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        jLabel4.setText("TOTAL:");
+        jPanel5.add(jLabel4);
+
+        jTextFieldTotal.setEditable(false);
+        jPanel5.add(jTextFieldTotal);
+
+        jPanel1.add(jPanel5, java.awt.BorderLayout.SOUTH);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
@@ -330,7 +344,9 @@ public class TicketsFrame extends BaseFrame {
     }//GEN-LAST:event_jComboBox1ActionPerformed
     
     public void logicaBuscar(){
-        try{            
+        try{                 
+            if (ticketsDM == null) return;
+                
             Date desde = FechasUtil.parse(desdeTF.getText());
             Date hasta = FechasUtil.parse(hastaTF.getText());
             
@@ -343,6 +359,13 @@ public class TicketsFrame extends BaseFrame {
             ticketsDM.fireTableDataChanged();
             jTableMain.updateUI();
             
+            BigDecimal total = BigDecimal.ZERO;
+            if (ticketsDM.getItems()!=null){
+                total = ticketsDM.getItems().stream().map(e -> e.getMonto()).reduce(BigDecimal.ZERO, BigDecimal::add);
+            }
+            
+            jTextFieldTotal.setText(NumbersUtil.round2ToStr(total));
+            
             jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Nro("+ticketsDM.getItems().size() +")"  , javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 14))); // NOI18N
             
         }
@@ -352,15 +375,15 @@ public class TicketsFrame extends BaseFrame {
     }
     
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        if (ticketsDM != null){
+        
             logicaBuscar();
-        }
+        
     }//GEN-LAST:event_btnBuscarActionPerformed
-
+    
     private void jButtonCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCrearActionPerformed
         try{
             NewTicketFrame frame = new NewTicketFrame();
-            frame.setPreferredSize(new Dimension(500,400));
+            frame.setPreferredSize(new Dimension(700,400));
             frame.pack();
             frame.centerOnScreen();
             frame.setTicketsFrame(this);
@@ -435,12 +458,15 @@ public class TicketsFrame extends BaseFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableMain;
+    private javax.swing.JTextField jTextFieldTotal;
     // End of variables declaration//GEN-END:variables
 }

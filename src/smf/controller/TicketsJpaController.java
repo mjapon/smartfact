@@ -21,6 +21,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import smf.controller.exceptions.NonexistentEntityException;
 import smf.entity.Clientes;
+import smf.entity.Facturas;
 import smf.entity.Secuencias;
 import smf.entity.Tickets;
 import smf.util.FechasUtil;
@@ -277,7 +278,9 @@ public class TicketsJpaController extends BaseJpaController<Tickets>implements S
             tickets.setTkFecreg(new Date());
             tickets.setTkMonto(ticketRow.getMonto());
             tickets.setTkNro(ticketRow.getTkNro());
+            tickets.setTkServicios(ticketRow.getTkServicios());
             tickets.setTkEstado(0);
+            tickets.setFactId(ticketRow.getFactId());
             
             SecuenciasJpaController seccontroller = new SecuenciasJpaController(em);
             
@@ -305,6 +308,14 @@ public class TicketsJpaController extends BaseJpaController<Tickets>implements S
             Tickets ticket = em.find(Tickets.class, ticketId);
             if (ticket != null){
                 ticket.setTkEstado(1);
+                
+                ticket.getFactId();
+                if (ticket.getFactId()!= null && ticket.getFactId()>0){
+                    Facturas factura = em.find(Facturas.class, ticket.getFactId());
+                    factura.setFactValido(1);
+                    em.persist(factura);
+                }
+                
             }            
             em.persist(ticket);            
             commitTrans();            

@@ -22,7 +22,9 @@ public class TotalesVentasModel {
     private BigDecimal sumaCredito = BigDecimal.ZERO;
     private BigDecimal sumaSaldo = BigDecimal.ZERO;
     
-    private Map<Integer,BigDecimal> utilidadesMap; 
+    private Map<Integer,BigDecimal> utilidadesMapEfectivo; 
+    private Map<Integer,BigDecimal> utilidadesMapCredito; 
+    
     private Map<Integer,BigDecimal> sumasCajaMap;
 
     public TotalesVentasModel() {
@@ -83,14 +85,6 @@ public class TotalesVentasModel {
         this.sumaSaldo = sumaSaldo;
     }
 
-    public Map<Integer, BigDecimal> getUtilidadesMap() {
-        return utilidadesMap;
-    }
-
-    public void setUtilidadesMap(Map<Integer, BigDecimal> utilidadesMap) {
-        this.utilidadesMap = utilidadesMap;
-    }
-
     public Map<Integer, BigDecimal> getSumasCajaMap() {
         return sumasCajaMap;
     }
@@ -98,6 +92,24 @@ public class TotalesVentasModel {
     public void setSumasCajaMap(Map<Integer, BigDecimal> sumasCajaMap) {
         this.sumasCajaMap = sumasCajaMap;
     }
+
+    public Map<Integer, BigDecimal> getUtilidadesMapEfectivo() {
+        return utilidadesMapEfectivo;
+    }
+
+    public void setUtilidadesMapEfectivo(Map<Integer, BigDecimal> utilidadesMapEfectivo) {
+        this.utilidadesMapEfectivo = utilidadesMapEfectivo;
+    }
+
+    public Map<Integer, BigDecimal> getUtilidadesMapCredito() {
+        return utilidadesMapCredito;
+    }
+
+    public void setUtilidadesMapCredito(Map<Integer, BigDecimal> utilidadesMapCredito) {
+        this.utilidadesMapCredito = utilidadesMapCredito;
+    }
     
+    
+     
     
 }

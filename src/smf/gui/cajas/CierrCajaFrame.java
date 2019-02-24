@@ -880,7 +880,7 @@ public class CierrCajaFrame extends BaseFrame {
         jPanel3.add(jButtonUpdVal);
 
         jBtnCerrarCaja.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jBtnCerrarCaja.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smf/gui/icons/icons8-close_sign.png"))); // NOI18N
+        jBtnCerrarCaja.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smf/gui/icons/Save_20px.png"))); // NOI18N
         jBtnCerrarCaja.setText("Cerrar Caja");
         jBtnCerrarCaja.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

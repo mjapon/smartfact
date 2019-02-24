@@ -1197,8 +1197,10 @@ public class MercaderiaFrame extends BaseFrame implements ParentNewArtFrame {
                 
                 if ("B".equalsIgnoreCase(artTipo)){
                     jCBTipo.setSelectedIndex(0);
+                    this.jTFFechaCadu.setEnabled(true);
                 }
                 else{
+                    this.jTFFechaCadu.setEnabled(false);
                     jCBTipo.setSelectedIndex(1);
                 }
                 

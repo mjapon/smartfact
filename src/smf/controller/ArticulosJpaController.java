@@ -9,7 +9,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
@@ -20,6 +22,7 @@ import smf.entity.Articulos;
 import smf.entity.Secuencias;
 import smf.util.ErrorValidException;
 import smf.util.FechasUtil;
+import smf.util.ItemFusay;
 import smf.util.NumbersUtil;
 import smf.util.datamodels.rows.FilaArticulo;
 import smf.util.datamodels.rows.FilaItemBuscar;
@@ -551,4 +554,28 @@ public class ArticulosJpaController extends BaseJpaController implements Seriali
          }
          return resultList;
     }
+    
+    public Map<Character,ItemFusay> listarTiposFusay(){
+        //956:k,957:t,958:c
+        String sql = "select o.ctes_valor from ctes o where ctes_clave = 'CODS_FUSAY'";
+        String codigosArt;
+        Object valor = getResultFirstItemNQ(sql);
+        
+        Map<Character,ItemFusay> mapItems = new HashMap<>();
+        
+        if (valor != null){
+            codigosArt = (String) valor;
+            String[] codigos = codigosArt.split(",");
+            for (String codigo: codigos){
+                String[] tipoCod = codigo.split(":");
+                String tipo = tipoCod[0];
+                String cod = tipoCod[1];
+                Articulos articulo = em.find(Articulos.class, Integer.valueOf(cod));
+                mapItems.put(tipo.charAt(0),new ItemFusay(tipo.charAt(0), cod, articulo));
+            }
+        }
+        
+        return mapItems;
+    }
+    
 }

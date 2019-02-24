@@ -15,7 +15,6 @@ import smf.util.NumbersUtil;
 import smf.util.datamodels.DefGSVCol;
 import smf.util.datamodels.JTableColumn;
 import smf.util.datamodels.UtilidadesByCajaDM;
-import smf.util.datamodels.rows.FilaCatCaja;
 import smf.util.datamodels.rows.FilaUtilsByCaja;
 
 /**

@@ -184,7 +184,7 @@ public class AdminVentasFrame extends BaseFrame implements ISearchArt, IAdminVen
             jTFSumaCredito.setText(NumbersUtil.round2ToStr(totalesVentasModel.getSumaCredito()) );
             jTFSumaSaldoPend.setText(NumbersUtil.round2ToStr(totalesVentasModel.getSumaSaldo()));
             
-            /*
+            
             if (mapUtilidades != null & mapUtilidades.get(1)!=null){
                 BigDecimal sumaUtilidades = BigDecimal.ZERO;
                 for(Map.Entry entry: mapUtilidades.entrySet()){
@@ -197,7 +197,7 @@ public class AdminVentasFrame extends BaseFrame implements ISearchArt, IAdminVen
             else{
                 jTFSumaUtilidades.setText(NumbersUtil.round2ToStr(totalesVentasModel.getUtilidades()));
             }
-            */
+            
             
             jTFSumaUtilidades.setText(NumbersUtil.round2ToStr(totalesVentasModel.getUtilidades()));
             
@@ -591,7 +591,7 @@ public class AdminVentasFrame extends BaseFrame implements ISearchArt, IAdminVen
             ventasDataModel.setParams(params);            
             ventasDataModel.loadFromDataBase();
             
-            mapUtilidades  = ventasDataModel.getTotalesVentasModel().getUtilidadesMap();
+            mapUtilidades  = ventasDataModel.getTotalesVentasModel().getUtilidadesMapEfectivo();
                         
             Integer numItems = ventasDataModel.getItems().size();
             jScrollPane1.setBorder(javax.swing.BorderFactory.createTitledBorder("("+numItems+")"));
@@ -689,7 +689,9 @@ public class AdminVentasFrame extends BaseFrame implements ISearchArt, IAdminVen
         if (row>-1){
             FilaVenta filart = this.ventasDataModel.getValueAt(row);
             Integer estado = facturasJpaController.getEstadoCaja(filart.getVentaId());
-            if (estado!=null && estado == 1){
+            
+            System.out.println("El estao de la caja es:" + estado!=null?estado:"null");
+            if (estado!=null && estado.intValue() == 1){
                 showMsg("No es posible editar este comprobante, la caja ya ha sido cerrada");
             }
             else{

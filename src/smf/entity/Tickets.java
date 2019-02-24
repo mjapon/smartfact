@@ -56,8 +56,14 @@ public class Tickets implements Serializable {
     @Column(name = "tk_obs")
     private String tkObs;
     
+    @Column(name = "tk_servicios")
+    private String tkServicios;
+    
     @Column(name = "tk_estado")
     private Integer tkEstado;
+    
+    @Column(name = "fact_id")
+    private Integer factId;
     
     @Basic(optional = false)
     @Column(name = "tk_nro")
@@ -142,8 +148,22 @@ public class Tickets implements Serializable {
     public void setTkEstado(Integer tkEstado) {
         this.tkEstado = tkEstado;
     }
-    
-    
+
+    public String getTkServicios() {
+        return tkServicios;
+    }
+
+    public void setTkServicios(String tkServicios) {
+        this.tkServicios = tkServicios;
+    }
+
+    public Integer getFactId() {
+        return factId;
+    }
+
+    public void setFactId(Integer factId) {
+        this.factId = factId;
+    }
 
     @Override
     public boolean equals(Object object) {

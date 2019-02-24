@@ -175,14 +175,16 @@ public class HomeFrame extends BaseFrame {
         jPanelInv = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
+        jButtonFact = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jButton11 = new javax.swing.JButton();
         jButton13 = new javax.swing.JButton();
         jButton12 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         jButton10 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -305,7 +307,7 @@ public class HomeFrame extends BaseFrame {
                             .addComponent(jLabel5)
                             .addGap(18, 18, 18)
                             .addComponent(jLabelNumServ))))
-                .addContainerGap(390, Short.MAX_VALUE))
+                .addContainerGap(249, Short.MAX_VALUE))
         );
         jPanelResumenLayout.setVerticalGroup(
             jPanelResumenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -345,8 +347,8 @@ public class HomeFrame extends BaseFrame {
         jPanel2.add(jPanel3, java.awt.BorderLayout.CENTER);
 
         jPanel4.setMinimumSize(new java.awt.Dimension(200, 441));
-        jPanel4.setPreferredSize(new java.awt.Dimension(400, 441));
-        jPanel4.setLayout(new java.awt.GridLayout(10, 1));
+        jPanel4.setPreferredSize(new java.awt.Dimension(500, 441));
+        jPanel4.setLayout(new java.awt.GridLayout(6, 2));
 
         jButton1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smf/gui/icons/Purchase Order_32px.png"))); // NOI18N
@@ -359,6 +361,17 @@ public class HomeFrame extends BaseFrame {
         });
         jPanel4.add(jButton1);
 
+        jButtonFact.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jButtonFact.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smf/gui/icons/icons8-view_details.png"))); // NOI18N
+        jButtonFact.setText("Facturas");
+        jButtonFact.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jButtonFact.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonFactActionPerformed(evt);
+            }
+        });
+        jPanel4.add(jButtonFact);
+
         jButton3.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smf/gui/icons/Cash Counter_32px.png"))); // NOI18N
         jButton3.setText("Abrir Caja");
@@ -370,17 +383,6 @@ public class HomeFrame extends BaseFrame {
         });
         jPanel4.add(jButton3);
 
-        jButton6.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smf/gui/icons/Cash Counter_close32px.png"))); // NOI18N
-        jButton6.setText("Cerrar Caja");
-        jButton6.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
-            }
-        });
-        jPanel4.add(jButton6);
-
         jButton8.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smf/gui/icons/icons8-request_money_1.png"))); // NOI18N
         jButton8.setText("Cuentas por cobrar");
@@ -391,6 +393,17 @@ public class HomeFrame extends BaseFrame {
             }
         });
         jPanel4.add(jButton8);
+
+        jButton6.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smf/gui/icons/Cash Counter_close32px.png"))); // NOI18N
+        jButton6.setText("Cerrar Caja");
+        jButton6.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+        jPanel4.add(jButton6);
 
         jButton9.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smf/gui/icons/icons8-initiate_money_transfer.png"))); // NOI18N
@@ -446,6 +459,17 @@ public class HomeFrame extends BaseFrame {
             }
         });
         jPanel4.add(jButton12);
+
+        jButton2.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smf/gui/icons/icons8-giving_tickets.png"))); // NOI18N
+        jButton2.setText("Tickets");
+        jButton2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        jPanel4.add(jButton2);
 
         jButton10.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/smf/gui/icons/Exit Sign_32px.png"))); // NOI18N
@@ -504,6 +528,14 @@ public class HomeFrame extends BaseFrame {
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
         appMain.showProveedoresFrame();
     }//GEN-LAST:event_jButton13ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        appMain.showTicketsFrame();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButtonFactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFactActionPerformed
+        appMain.showListaVentas();
+    }//GEN-LAST:event_jButtonFactActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -511,11 +543,13 @@ public class HomeFrame extends BaseFrame {
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton13;
+    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
+    private javax.swing.JButton jButtonFact;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

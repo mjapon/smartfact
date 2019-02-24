@@ -32,7 +32,7 @@ public class VentasByCajaDM extends GenericDataModel<RowFactByCaja>{
     @Override
     public void updateTotales() {
         totalesVentasModel = new TotalesVentasModel();
-        totalesVentasModel.setUtilidadesMap(new HashMap<>());
+        totalesVentasModel.setUtilidadesMapEfectivo(new HashMap<>());
         BigDecimal sumaIva = BigDecimal.ZERO;
         BigDecimal sumaDesc = BigDecimal.ZERO;
         BigDecimal sumaTotal = BigDecimal.ZERO;

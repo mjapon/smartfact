@@ -23,6 +23,8 @@ public class TicketRow {
     private BigDecimal monto;
     private Integer tkNro;
     private String tkObs;
+    private String tkServicios;
+    private Integer factId;
 
     public TicketRow() {
     }
@@ -121,6 +123,23 @@ public class TicketRow {
     public void setCliTelf(String cliTelf) {
         this.cliTelf = cliTelf;
     }
+
+    public String getTkServicios() {
+        return tkServicios;
+    }
+
+    public void setTkServicios(String tkServicios) {
+        this.tkServicios = tkServicios;
+    }
+
+    public Integer getFactId() {
+        return factId;
+    }
+
+    public void setFactId(Integer factId) {
+        this.factId = factId;
+    }
+    
     
     
     

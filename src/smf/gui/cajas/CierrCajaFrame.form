@@ -695,7 +695,7 @@
               <Font name="Arial" size="12" style="0"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/smf/gui/icons/icons8-close_sign.png"/>
+              <Image iconType="3" name="/smf/gui/icons/Save_20px.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Cerrar Caja"/>
           </Properties>

@@ -120,6 +120,11 @@ public class SmartFactMain extends javax.swing.JFrame {
                     AdminVentasFrame frame = (AdminVentasFrame)estadoApp.getFrame();
                     frame.logicaBuscar();
                 }
+                else if("Tickets".equalsIgnoreCase(title)){
+                    EstadoAPP estadoApp = estadosApp.get(TicketsFrame.class.getName());
+                    TicketsFrame frame = (TicketsFrame)estadoApp.getFrame();
+                    frame.logicaBuscar();
+                }
             }
           };        
         this.tabbedPaneMain.addChangeListener(changeListener);
