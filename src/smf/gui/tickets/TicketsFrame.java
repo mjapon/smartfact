@@ -387,7 +387,14 @@ public class TicketsFrame extends BaseFrame {
             frame.pack();
             frame.centerOnScreen();
             frame.setTicketsFrame(this);
-            frame.setVisible(true);
+            
+            if (frame.checkAperturaCaja()){
+                frame.setVisible(true);
+            }
+            else{
+                frame.setVisible(false);
+            }
+            
         }
         catch(Throwable ex){
             showMsgError(ex);
