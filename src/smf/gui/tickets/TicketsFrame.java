@@ -16,6 +16,7 @@ import java.util.List;
 import javax.swing.JFormattedTextField;
 import javax.swing.JTable;
 import smf.controller.CtesJpaController;
+import smf.controller.FacturasJpaController;
 import smf.controller.TicketsJpaController;
 import smf.gui.BaseFrame;
 import smf.gui.SmartFactMain;
@@ -41,6 +42,7 @@ public class TicketsFrame extends BaseFrame {
     private List<JTableColumn> columns;
     private TicketsJpaController controller;
     private CtesJpaController ctesJpaController;
+    private FacturasJpaController facturasJpaController;
      
     /**
      * Creates new form TicketsFrame
@@ -428,23 +430,23 @@ public class TicketsFrame extends BaseFrame {
     }//GEN-LAST:event_jButtonImprimirActionPerformed
 
     private void jButtonAnularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAnularActionPerformed
-        
         try{
-            
             int[] rows= jTableMain.getSelectedRows();
             if (rows.length>0){
                 //if (showConfirmMsg("¿Esta seguro/a?")){
                 TicketRow fil = this.ticketsDM.getValueAt(rows[0]);
-
-                if (showConfirmMsg("¿Seguro que desea anular el ticket?")){
-                    controller.anularTicket(fil.getTicketId());
-                    
-                    SmartFactMain.showSystemTrayMsg("El ticket ha sido anulado");
-                    logicaBuscar();
+                
+                if (facturasJpaController.isCajaFacturaCerrada( fil.getFactId() )){
+                    showMsg("NO ES POSIBLE ANULAR ESTA FACTURA, LA CAJA YA HA SIDO CERRADA");
                 }
-            }
-                    
-                    
+                else{
+                    if (showConfirmMsg("¿Seguro que desea anular el ticket?")){
+                        controller.anularTicket(fil.getTicketId());
+                        SmartFactMain.showSystemTrayMsg("El ticket ha sido anulado");
+                        logicaBuscar();
+                    }
+                }
+            }       
         }
         catch(Throwable ex){
             showMsgError(ex);

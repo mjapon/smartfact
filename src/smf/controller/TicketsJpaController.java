@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.TemporalType;
@@ -27,10 +26,8 @@ import smf.entity.Tickets;
 import smf.util.FechasUtil;
 import smf.util.GenTxtFactura;
 import smf.util.NumbersUtil;
-import smf.util.ParamsBuscaCaja;
 import smf.util.ParamsBuscaTickets;
 import smf.util.datamodels.rows.TicketRow;
-import sun.security.krb5.internal.Ticket;
 
 /**
  *
@@ -187,7 +184,8 @@ public class TicketsJpaController extends BaseJpaController<Tickets>implements S
         "  cli.cli_telf,\n" +
         "  tk.tk_monto,\n" +
         "  tk.tk_obs,\n" +
-        "  cli.cli_id\n" +
+        "  cli.cli_id,\n" +
+        "  tk.fact_id\n" +
         " from tickets tk\n" +
         " join clientes cli ON tk.cli_id = cli.cli_id\n" +
         " where tk.tk_estado=0 and  date(tk.tk_fecreg) >= date(?paramDesde) "+
@@ -213,8 +211,10 @@ public class TicketsJpaController extends BaseJpaController<Tickets>implements S
             BigDecimal monto = (BigDecimal)row[7];
             String obs = (String)row[8];
             Integer cliId = (Integer)row[9];
+            Integer fact_id = (Integer)row[10];
             
             TicketRow row1 = new TicketRow(ticketid, cliId, ci, nombres, dir, FechasUtil.format(fecreg), monto, ticketNro, obs, telf);
+            row1.setFactId(fact_id);
             resultList.add(row1);
         }
         
