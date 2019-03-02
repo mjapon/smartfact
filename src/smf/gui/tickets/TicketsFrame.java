@@ -57,6 +57,7 @@ public class TicketsFrame extends BaseFrame {
         ticketsDM = new TicketsDM(columns, controller);
         jTableMain.setModel(ticketsDM);
         jTableMain.updateUI();
+        facturasJpaController = new FacturasJpaController(em);
         
         jTableMain.getSelectionModel().addListSelectionListener((e) -> {
             int[] rows =  jTableMain.getSelectedRows();
